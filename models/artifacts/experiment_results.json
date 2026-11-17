@@ -1,0 +1,218 @@
+{
+  "E0": {
+    "name": "E0 \u2014 Historical Baseline",
+    "features_count": 4,
+    "features": [
+      "prev_stop_delay_min",
+      "route_code",
+      "route_prior_mean_delay",
+      "scheduled_travel_time_sec"
+    ],
+    "test_metrics": {
+      "mae": 5.059,
+      "rmse": 7.881,
+      "r2": 0.0162,
+      "medae": 3.7
+    }
+  },
+  "E1": {
+    "name": "E1 \u2014 Transit + Temporal",
+    "features_count": 14,
+    "features": [
+      "prev_stop_delay_min",
+      "route_code",
+      "route_prior_mean_delay",
+      "scheduled_travel_time_sec",
+      "hour_of_day",
+      "day_of_week",
+      "is_weekend",
+      "is_morning_peak",
+      "is_evening_peak",
+      "is_peak_hour",
+      "hour_sin",
+      "hour_cos",
+      "dow_sin",
+      "dow_cos"
+    ],
+    "test_metrics": {
+      "mae": 0.833,
+      "rmse": 1.676,
+      "r2": 0.9555,
+      "medae": 0.5
+    },
+    "classification_metrics": {
+      "accuracy": 0.8922,
+      "macro_f1": 0.8991,
+      "macro_precision": 0.91,
+      "macro_recall": 0.8897,
+      "severe_recall": 0.88
+    }
+  },
+  "E2": {
+    "name": "E2 \u2014 Transit + Temporal + Weather",
+    "features_count": 22,
+    "features": [
+      "prev_stop_delay_min",
+      "route_code",
+      "route_prior_mean_delay",
+      "scheduled_travel_time_sec",
+      "hour_of_day",
+      "day_of_week",
+      "is_weekend",
+      "is_morning_peak",
+      "is_evening_peak",
+      "is_peak_hour",
+      "hour_sin",
+      "hour_cos",
+      "dow_sin",
+      "dow_cos",
+      "precip_rate_mm",
+      "is_raining",
+      "is_heavy_rain",
+      "temperature_c",
+      "relative_humidity",
+      "wind_gusts_kmh",
+      "weather_severity_idx",
+      "precip_rolling_3h_mm"
+    ],
+    "test_metrics": {
+      "mae": 0.827,
+      "rmse": 1.794,
+      "r2": 0.949,
+      "medae": 0.492
+    },
+    "classification_metrics": {
+      "accuracy": 0.9003,
+      "macro_f1": 0.9062,
+      "macro_precision": 0.9141,
+      "macro_recall": 0.8992,
+      "severe_recall": 0.888
+    }
+  },
+  "E3": {
+    "name": "E3 \u2014 Full Multimodal (Weather + Events + Spatial)",
+    "features_count": 40,
+    "features": [
+      "prev_stop_delay_min",
+      "route_code",
+      "route_prior_mean_delay",
+      "scheduled_travel_time_sec",
+      "hour_of_day",
+      "day_of_week",
+      "is_weekend",
+      "is_morning_peak",
+      "is_evening_peak",
+      "is_peak_hour",
+      "hour_sin",
+      "hour_cos",
+      "dow_sin",
+      "dow_cos",
+      "precip_rate_mm",
+      "is_raining",
+      "is_heavy_rain",
+      "temperature_c",
+      "relative_humidity",
+      "wind_gusts_kmh",
+      "weather_severity_idx",
+      "precip_rolling_3h_mm",
+      "stop_lat",
+      "stop_lon",
+      "dist_to_cbd_km",
+      "stop_sequence",
+      "route_progression_pct",
+      "road_hierarchy_level",
+      "stop_density_1km",
+      "event_count_500m",
+      "event_count_1km",
+      "event_count_3km",
+      "dist_nearest_event_km",
+      "min_to_nearest_event",
+      "event_capacity_shock",
+      "has_nearby_event",
+      "rain_x_peak_hour",
+      "rain_x_road_hierarchy",
+      "event_x_peak_hour",
+      "weather_x_progression"
+    ],
+    "test_metrics": {
+      "mae": 0.927,
+      "rmse": 1.728,
+      "r2": 0.9527,
+      "medae": 0.576
+    },
+    "classification_metrics": {
+      "accuracy": 0.9006,
+      "macro_f1": 0.9062,
+      "macro_precision": 0.914,
+      "macro_recall": 0.8993,
+      "severe_recall": 0.888
+    }
+  },
+  "E4_LightGBM": {
+    "name": "E4 \u2014 Optimized LightGBM (Production Default)",
+    "best_params": {
+      "n_estimators": 350,
+      "learning_rate": 0.020881460005769875,
+      "max_depth": 9,
+      "num_leaves": 16,
+      "subsample": 0.7471805130271512,
+      "colsample_bytree": 0.6721985844999355,
+      "reg_alpha": 0.20179498679029842,
+      "reg_lambda": 0.15376875709919713
+    },
+    "test_metrics": {
+      "mae": 0.851,
+      "rmse": 1.843,
+      "r2": 0.9462,
+      "medae": 0.499
+    },
+    "classification_metrics": {
+      "accuracy": 0.9014,
+      "macro_f1": 0.9078,
+      "macro_precision": 0.9163,
+      "macro_recall": 0.9002,
+      "severe_recall": 0.888
+    },
+    "latency_benchmark": {
+      "latency_p50_ms": 0.3,
+      "latency_p95_ms": 0.33,
+      "latency_p99_ms": 0.42
+    }
+  },
+  "E4_XGBoost": {
+    "name": "E4 \u2014 XGBoost",
+    "test_metrics": {
+      "mae": 0.787,
+      "rmse": 1.633,
+      "r2": 0.9578,
+      "medae": 0.5
+    },
+    "latency_benchmark": {
+      "latency_p50_ms": 0.84,
+      "latency_p95_ms": 1.05,
+      "latency_p99_ms": 1.32
+    }
+  },
+  "E4_CatBoost": {
+    "name": "E4 \u2014 CatBoost",
+    "test_metrics": {
+      "mae": 1.153,
+      "rmse": 3.698,
+      "r2": 0.7834,
+      "medae": 0.494
+    }
+  },
+  "slices_analysis": {
+    "peak_hour_mae": 0.568,
+    "offpeak_hour_mae": 1.061,
+    "rain_condition_mae": 1.432,
+    "clear_condition_mae": 0.556,
+    "route_level_mae": {
+      "201-R": 0.728,
+      "335-E": 0.906,
+      "500-D": 0.882,
+      "G-2": 0.843,
+      "KIA-9": 0.833
+    }
+  }
+}
