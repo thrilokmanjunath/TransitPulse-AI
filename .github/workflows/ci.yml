@@ -1,0 +1,47 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          uv venv .venv --python ${{ matrix.python-version }}
+          uv pip install --python .venv/bin/python -e ".[dev]"
+
+      - name: Code Quality & Linting
+        run: |
+          .venv/bin/ruff check src/ api/ tests/
+
+      - name: Security SAST Scan (Bandit)
+        run: |
+          .venv/bin/bandit -r src api
+
+      - name: Dependency Audit (pip-audit)
+        run: |
+          .venv/bin/pip-audit --desc
+
+      - name: Run Pytest Suite with Coverage
+        run: |
+          .venv/bin/pytest --cov=transitpulse --cov=api tests/ -v

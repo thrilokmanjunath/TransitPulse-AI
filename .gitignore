@@ -1,0 +1,98 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.cert
+*.pfx
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing & Coverage
+catboost_info/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# MLflow & Experiments
+mlruns/
+mlartifacts/
+.optuna/
+*.db
+*.sqlite3
+
+# Large Data & Artifacts (keep sample data and gitkeep)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/simulated/*
+!data/simulated/.gitkeep
+models/artifacts/*
+!models/artifacts/.gitkeep
+!models/artifacts/model_metadata.json
+!models/artifacts/experiment_results.json
+!models/artifacts/sample_test_records.parquet
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+logs/
+*.log
