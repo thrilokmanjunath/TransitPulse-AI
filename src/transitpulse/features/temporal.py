@@ -14,10 +14,10 @@ def extract_temporal_features(df: pd.DataFrame, time_col: str = "scheduled_time"
 
     # 1. Base calendar fields
     df_feat["hour_of_day"] = dt.dt.hour.astype(np.int32)
-    df_feat["day_of_week"] = dt.dt.dayofweek.astype(np.int32)
+    df_feat["day_of_week"] = dt.dt.day_of_week.astype(np.int32)
     df_feat["day_of_month"] = dt.dt.day.astype(np.int32)
     df_feat["month"] = dt.dt.month.astype(np.int32)
-    df_feat["is_weekend"] = (dt.dt.dayofweek >= 5).astype(np.int8)
+    df_feat["is_weekend"] = (dt.dt.day_of_week >= 5).astype(np.int8)
 
     # 2. Peak Hour Indicators (Bengaluru Peak Commute Windows)
     # Morning: 08:00 - 11:30, Evening: 17:00 - 21:00
