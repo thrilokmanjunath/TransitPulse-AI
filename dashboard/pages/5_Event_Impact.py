@@ -29,20 +29,22 @@ with c1:
     venues_df["lon"] = venues_df["venue_lon"]
     venues_df["Size"] = venues_df["expected_attendance"]
 
-    fig_venues = px.scatter_mapbox(
-        venues_df,
-        lat="lat",
-        lon="lon",
-        size="Size",
-        color="event_category",
-        hover_name="Name",
-        hover_data=["event_name", "expected_attendance"],
-        zoom=10.5,
-        center={"lat": settings.CENTROID_LAT, "lon": settings.CENTROID_LON},
-        mapbox_style="carto-positron",
-        title="Major Bengaluru Venues (Circle size = Capacity)",
-        height=450,
-    )
+    map_kwargs = {
+        "lat": "lat",
+        "lon": "lon",
+        "size": "Size",
+        "color": "event_category",
+        "hover_name": "Name",
+        "hover_data": ["event_name", "expected_attendance"],
+        "zoom": 10.5,
+        "center": {"lat": settings.CENTROID_LAT, "lon": settings.CENTROID_LON},
+        "title": "Major Bengaluru Venues (Circle size = Capacity)",
+        "height": 450,
+    }
+    if hasattr(px, "scatter_map"):
+        fig_venues = px.scatter_map(venues_df, map_style="open-street-map", **map_kwargs)
+    else:
+        fig_venues = px.scatter_mapbox(venues_df, mapbox_style="carto-positron", **map_kwargs)
     st.plotly_chart(fig_venues, use_container_width=True)
 
 with c2:

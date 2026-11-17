@@ -132,19 +132,21 @@ def main():
         df_routes = transit_conn.get_routes()
         df_stops = transit_conn.get_stops()
 
-        fig_map = px.scatter_mapbox(
-            df_stops,
-            lat="stop_lat",
-            lon="stop_lon",
-            color="route_short_name",
-            hover_name="stop_name",
-            hover_data=["route_id", "stop_sequence"],
-            zoom=10.5,
-            center={"lat": settings.CENTROID_LAT, "lon": settings.CENTROID_LON},
-            mapbox_style="carto-positron",
-            height=480,
-            title="BMTC Transit Stop Coordinates & Route Alignment",
-        )
+        map_kwargs = {
+            "lat": "stop_lat",
+            "lon": "stop_lon",
+            "color": "route_short_name",
+            "hover_name": "stop_name",
+            "hover_data": ["route_id", "stop_sequence"],
+            "zoom": 10.5,
+            "center": {"lat": settings.CENTROID_LAT, "lon": settings.CENTROID_LON},
+            "height": 480,
+            "title": "BMTC Transit Stop Coordinates & Route Alignment",
+        }
+        if hasattr(px, "scatter_map"):
+            fig_map = px.scatter_map(df_stops, map_style="open-street-map", **map_kwargs)
+        else:
+            fig_map = px.scatter_mapbox(df_stops, mapbox_style="carto-positron", **map_kwargs)
         st.plotly_chart(fig_map, use_container_width=True)
 
     with c_right:
