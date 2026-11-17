@@ -46,7 +46,10 @@ class WeatherConnector:
         }
         logger.info(
             "Querying Open-Meteo Historical Archive (%s to %s) for Bengaluru [%.4f, %.4f]...",
-            start_date, end_date, lat, lon
+            start_date,
+            end_date,
+            lat,
+            lon,
         )
 
         for attempt in range(1, max_retries + 1):
@@ -68,12 +71,14 @@ class WeatherConnector:
                 else:
                     logger.warning(
                         "Open-Meteo returned status %d (Attempt %d/%d): %s",
-                        resp.status_code, attempt, max_retries, resp.text[:200]
+                        resp.status_code,
+                        attempt,
+                        max_retries,
+                        resp.text[:200],
                     )
             except Exception as exc:
                 logger.warning(
-                    "Open-Meteo request failed on attempt %d/%d: %s",
-                    attempt, max_retries, exc
+                    "Open-Meteo request failed on attempt %d/%d: %s", attempt, max_retries, exc
                 )
             time.sleep(backoff_sec * attempt)
 
@@ -120,52 +125,58 @@ class WeatherConnector:
         start_dt = pd.to_datetime(start_date).tz_localize(settings.TIMEZONE)
         end_dt = (pd.to_datetime(end_date) + pd.Timedelta(days=1)).tz_localize(settings.TIMEZONE)
         timestamps = pd.date_range(start=start_dt, end=end_dt, freq="1h", inclusive="left")
-        
+
         np.random.seed(settings.RANDOM_SEED)
         hours = timestamps.hour.values
-        
+
         # Diurnal temperature cycle in Bengaluru: ~20°C min early morning to ~32°C max afternoon
         temp = 20.0 + 10.0 * np.sin((hours - 8) * np.pi / 12) + np.random.normal(0, 1.2, len(hours))
         temp = np.clip(temp, 16.0, 36.0)
-        
+
         # Humidity inversely proportional to temperature
-        humidity = 85.0 - 30.0 * np.sin((hours - 8) * np.pi / 12) + np.random.normal(0, 4.0, len(hours))
+        humidity = (
+            85.0 - 30.0 * np.sin((hours - 8) * np.pi / 12) + np.random.normal(0, 4.0, len(hours))
+        )
         humidity = np.clip(humidity, 30.0, 98.0)
-        
+
         # Bengaluru convective afternoon/evening thunderstorm rains
         rain_prob = np.where((hours >= 15) & (hours <= 21), 0.35, 0.08)
         is_raining = np.random.binomial(1, rain_prob)
         rain_depth = is_raining * np.random.exponential(scale=5.5, size=len(hours))
         rain_depth = np.round(rain_depth, 2)
-        
+
         # Wind speed & gusts
         wind_speed = 10.0 + 5.0 * np.sin(hours * np.pi / 12) + np.random.normal(0, 2.0, len(hours))
         wind_speed = np.clip(wind_speed, 2.0, 40.0)
         wind_gusts = wind_speed + np.random.uniform(5.0, 20.0, len(hours)) * (rain_depth > 0)
-        
+
         # WMO Weather Codes: 0 (Clear), 61 (Slight rain), 63 (Moderate rain), 65 (Heavy), 95 (Thunderstorm)
         weather_codes = np.zeros(len(hours), dtype=int)
         weather_codes[rain_depth > 0.1] = 61
         weather_codes[rain_depth > 5.0] = 63
         weather_codes[rain_depth > 12.0] = 65
         weather_codes[(rain_depth > 8.0) & (wind_gusts > 30.0)] = 95
-        
-        df = pd.DataFrame({
-            "timestamp": timestamps,
-            "temperature_2m": np.round(temp, 2),
-            "relative_humidity_2m": np.round(humidity, 1),
-            "precipitation": rain_depth,
-            "rain": rain_depth,
-            "wind_speed_10m": np.round(wind_speed, 1),
-            "wind_gusts_10m": np.round(wind_gusts, 1),
-            "weather_code": weather_codes,
-            "dataset_mode": "simulated",
-        })
+
+        df = pd.DataFrame(
+            {
+                "timestamp": timestamps,
+                "temperature_2m": np.round(temp, 2),
+                "relative_humidity_2m": np.round(humidity, 1),
+                "precipitation": rain_depth,
+                "rain": rain_depth,
+                "wind_speed_10m": np.round(wind_speed, 1),
+                "wind_gusts_10m": np.round(wind_gusts, 1),
+                "weather_code": weather_codes,
+                "dataset_mode": "simulated",
+            }
+        )
         df.to_parquet(self.weather_file, index=False)
         logger.info("Generated fallback Bengaluru weather dataset with %d records.", len(df))
         return df
 
-    def get_weather(self, start_date: str = "2024-05-01", end_date: str = "2024-05-31") -> pd.DataFrame:
+    def get_weather(
+        self, start_date: str = "2024-05-01", end_date: str = "2024-05-31"
+    ) -> pd.DataFrame:
         """Retrieves cached weather or queries API."""
         if self.weather_file.exists():
             return pd.read_parquet(self.weather_file)

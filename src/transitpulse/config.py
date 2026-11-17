@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Platform-wide settings and directory paths."""
-    
+
     # Base paths
     PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent
     DATA_DIR: Path = PROJECT_ROOT / "data"
@@ -21,17 +21,17 @@ class Settings(BaseSettings):
     DATA_PROCESSED: Path = DATA_DIR / "processed"
     DATA_SIMULATED: Path = DATA_DIR / "simulated"
     DATA_EXTERNAL: Path = DATA_DIR / "external"
-    
+
     MODELS_DIR: Path = PROJECT_ROOT / "models"
     ARTIFACTS_DIR: Path = MODELS_DIR / "artifacts"
     REPORTS_DIR: Path = PROJECT_ROOT / "reports"
     LOGS_DIR: Path = PROJECT_ROOT / "logs"
-    
+
     # Environment & Reproducibility
     ENVIRONMENT: str = "production"
     RANDOM_SEED: int = 42
     TIMEZONE: str = "Asia/Kolkata"
-    
+
     # Geographic Scope: Bengaluru, Karnataka, India
     CITY_NAME: str = "Bengaluru"
     LAT_MIN: float = 12.75
@@ -40,18 +40,18 @@ class Settings(BaseSettings):
     LON_MAX: float = 77.85
     CENTROID_LAT: float = 12.9716
     CENTROID_LON: float = 77.5946
-    
+
     # Pipeline Latency & Leakage Prevention
     INGESTION_LATENCY_MINUTES: int = 2
-    
+
     # Multi-Horizon Targets (Minutes)
     FORECAST_HORIZONS: list[int] = [15, 30, 60]
-    
+
     # Delay Classification Thresholds (Minutes)
     # On-time: <= 5m, Minor: (5, 10], Moderate: (10, 20], Severe: > 20m
     DELAY_CLASSES: list[str] = ["On-time", "Minor", "Moderate", "Severe"]
     CLASS_THRESHOLDS: list[float] = [5.0, 10.0, 20.0]
-    
+
     # Open-Meteo Configuration
     OPEN_METEO_HISTORICAL_URL: str = "https://archive-api.open-meteo.com/v1/archive"
     OPEN_METEO_FORECAST_URL: str = "https://api.open-meteo.com/v1/forecast"
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
         "wind_gusts_10m",
         "weather_code",
     ]
-    
+
     # Major Public Event Venues in Bengaluru
     BENGALURU_VENUES: dict[str, dict[str, Any]] = {
         "chinnaswamy_stadium": {
@@ -110,19 +110,15 @@ class Settings(BaseSettings):
             "category": "sports",
         },
     }
-    
+
     # API Settings (Default loopback for secure local execution; override to 0.0.0.0 in Docker)
     API_HOST: str = "127.0.0.1"
     API_PORT: int = 8000
-    
+
     # Streamlit Dashboard Settings
     DASHBOARD_PORT: int = 8501
-    
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()

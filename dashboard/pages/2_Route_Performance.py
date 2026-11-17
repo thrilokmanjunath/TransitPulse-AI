@@ -1,8 +1,8 @@
 """Page 2: Route Performance."""
 
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
 from transitpulse.config import settings
 from transitpulse.ingestion.transit_connector import TransitConnector
@@ -61,14 +61,20 @@ if sim_file.exists():
     # Hourly congestion heatmap
     st.subheader("Diurnal Delay Profile by Hour of Day")
     df_route_sim["hour"] = pd.to_datetime(df_route_sim["scheduled_time"]).dt.hour
-    hourly_avg = df_route_sim.groupby(["hour", "stop_name"])["observed_delay_min"].mean().reset_index()
+    hourly_avg = (
+        df_route_sim.groupby(["hour", "stop_name"])["observed_delay_min"].mean().reset_index()
+    )
     fig_heat = px.density_heatmap(
         hourly_avg,
         x="hour",
         y="stop_name",
         z="observed_delay_min",
         title="Spatiotemporal Heatmap: Hour of Day vs Bus Stop Delay",
-        labels={"hour": "Hour of Day (IST)", "stop_name": "Bus Stop", "observed_delay_min": "Mean Delay (min)"},
+        labels={
+            "hour": "Hour of Day (IST)",
+            "stop_name": "Bus Stop",
+            "observed_delay_min": "Mean Delay (min)",
+        },
         color_continuous_scale="Reds",
         height=480,
     )

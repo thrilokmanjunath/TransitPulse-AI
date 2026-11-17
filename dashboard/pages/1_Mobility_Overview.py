@@ -1,15 +1,15 @@
 """Page 1: Mobility Overview."""
 
-import streamlit as st
-import pandas as pd
 import plotly.express as px
+import streamlit as st
 
 from transitpulse.config import settings
 from transitpulse.ingestion.transit_connector import TransitConnector
-from transitpulse.ingestion.weather_connector import WeatherConnector
 
 st.title("🌐 Urban Mobility Overview")
-st.markdown("Macro-level operational health, fleet spatial distribution, and meteorological conditions across Bengaluru.")
+st.markdown(
+    "Macro-level operational health, fleet spatial distribution, and meteorological conditions across Bengaluru."
+)
 
 transit_conn = TransitConnector()
 df_routes = transit_conn.get_routes()
@@ -21,7 +21,9 @@ with c1:
 with c2:
     st.info(f"**Total Transit Stops:** {len(df_stops)}")
 with c3:
-    st.info(f"**City Bounding Box:** Lat [{settings.LAT_MIN}, {settings.LAT_MAX}], Lon [{settings.LON_MIN}, {settings.LON_MAX}]")
+    st.info(
+        f"**City Bounding Box:** Lat [{settings.LAT_MIN}, {settings.LAT_MAX}], Lon [{settings.LON_MIN}, {settings.LON_MAX}]"
+    )
 
 st.markdown("### Corridor Length & Stop Distribution")
 col_a, col_b = st.columns(2)
@@ -33,7 +35,11 @@ with col_a:
         y="distance_km",
         color="num_stops",
         title="Corridor Distance (km) & Number of Stops",
-        labels={"route_short_name": "Route Code", "distance_km": "Distance (km)", "num_stops": "Stops Count"},
+        labels={
+            "route_short_name": "Route Code",
+            "distance_km": "Distance (km)",
+            "num_stops": "Stops Count",
+        },
         color_continuous_scale="Viridis",
         height=380,
     )
@@ -46,7 +52,10 @@ with col_b:
         y="scheduled_duration_min",
         color="distance_km",
         title="Scheduled Traversal Time (Minutes)",
-        labels={"route_short_name": "Route Code", "scheduled_duration_min": "Scheduled Traversal (min)"},
+        labels={
+            "route_short_name": "Route Code",
+            "scheduled_duration_min": "Scheduled Traversal (min)",
+        },
         color_continuous_scale="Cividis",
         height=380,
     )

@@ -1,14 +1,17 @@
 """Page 8: Model Benchmarking & Experiment Ladder Results."""
 
-import streamlit as st
-import pandas as pd
 import json
+
+import pandas as pd
 import plotly.express as px
+import streamlit as st
 
 from transitpulse.config import settings
 
 st.title("📈 Scientific Benchmarks & Experiment Ladder")
-st.markdown("Rigorous out-of-time evaluation of Experiments E0 through E4, model family comparisons, and operational latency profiles.")
+st.markdown(
+    "Rigorous out-of-time evaluation of Experiments E0 through E4, model family comparisons, and operational latency profiles."
+)
 
 results_file = settings.ARTIFACTS_DIR / "experiment_results.json"
 meta_file = settings.ARTIFACTS_DIR / "model_metadata.json"
@@ -24,7 +27,7 @@ with open(meta_file, "r", encoding="utf-8") as f:
 
 # Table summary of experiment ladder
 ladder_data = []
-for k in ["E0", "E1", "E2", "E3", "E4_LightGBM", "E4_XGBoost", "E4_CatBoost"]:
+for k in ["E0", "E0_Persistence", "E1", "E2", "E3", "E4_LightGBM", "E4_XGBoost", "E4_CatBoost"]:
     if k in results and "test_metrics" in results[k]:
         m = results[k]["test_metrics"]
         row = {
@@ -84,10 +87,22 @@ lgb_latency = results.get("E4_LightGBM", {}).get("latency_benchmark", {})
 xgb_latency = results.get("E4_XGBoost", {}).get("latency_benchmark", {})
 
 if lgb_latency:
-    lat_df = pd.DataFrame([
-        {"Model": "LightGBM (Production)", "P50 Latency (ms)": lgb_latency.get("latency_p50_ms", 1.8), "P95 Latency (ms)": lgb_latency.get("latency_p95_ms", 3.2), "P99 Latency (ms)": lgb_latency.get("latency_p99_ms", 5.0)},
-        {"Model": "XGBoost", "P50 Latency (ms)": xgb_latency.get("latency_p50_ms", 2.4), "P95 Latency (ms)": xgb_latency.get("latency_p95_ms", 4.1), "P99 Latency (ms)": xgb_latency.get("latency_p99_ms", 6.8)},
-    ])
+    lat_df = pd.DataFrame(
+        [
+            {
+                "Model": "LightGBM (Production)",
+                "P50 Latency (ms)": lgb_latency.get("latency_p50_ms", 1.8),
+                "P95 Latency (ms)": lgb_latency.get("latency_p95_ms", 3.2),
+                "P99 Latency (ms)": lgb_latency.get("latency_p99_ms", 5.0),
+            },
+            {
+                "Model": "XGBoost",
+                "P50 Latency (ms)": xgb_latency.get("latency_p50_ms", 2.4),
+                "P95 Latency (ms)": xgb_latency.get("latency_p95_ms", 4.1),
+                "P99 Latency (ms)": xgb_latency.get("latency_p99_ms", 6.8),
+            },
+        ]
+    )
     st.dataframe(lat_df, use_container_width=True, hide_index=True)
 
 # Stratified Slices

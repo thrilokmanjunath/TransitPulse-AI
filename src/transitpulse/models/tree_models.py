@@ -40,7 +40,9 @@ class LightGBMModel:
         y_train_cls: np.ndarray | None = None,
         eval_set_reg: tuple[pd.DataFrame, np.ndarray] | None = None,
     ) -> "LightGBMModel":
-        callbacks = [lgb.early_stopping(stopping_rounds=25, verbose=False)] if eval_set_reg else None
+        callbacks = (
+            [lgb.early_stopping(stopping_rounds=25, verbose=False)] if eval_set_reg else None
+        )
         self.regressor.fit(
             X_train,
             y_train_reg,

@@ -93,18 +93,20 @@ class EventConnector:
 
         for e in CURATED_BENGALURU_EVENTS:
             v_info = settings.BENGALURU_VENUES[e["venue_key"]]
-            records.append({
-                "event_id": e["event_id"],
-                "event_name": e["event_name"],
-                "venue_name": v_info["name"],
-                "venue_lat": v_info["lat"],
-                "venue_lon": v_info["lon"],
-                "event_category": e["event_category"],
-                "expected_attendance": e["expected_attendance"],
-                "start_time": pd.to_datetime(e["start_time"]).tz_localize(settings.TIMEZONE),
-                "end_time": pd.to_datetime(e["end_time"]).tz_localize(settings.TIMEZONE),
-                "dataset_mode": "observed",
-            })
+            records.append(
+                {
+                    "event_id": e["event_id"],
+                    "event_name": e["event_name"],
+                    "venue_name": v_info["name"],
+                    "venue_lat": v_info["lat"],
+                    "venue_lon": v_info["lon"],
+                    "event_category": e["event_category"],
+                    "expected_attendance": e["expected_attendance"],
+                    "start_time": pd.to_datetime(e["start_time"]).tz_localize(settings.TIMEZONE),
+                    "end_time": pd.to_datetime(e["end_time"]).tz_localize(settings.TIMEZONE),
+                    "dataset_mode": "observed",
+                }
+            )
 
         df_events = pd.DataFrame(records)
         df_events.to_parquet(self.events_file, index=False)

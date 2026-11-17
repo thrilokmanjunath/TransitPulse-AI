@@ -136,42 +136,43 @@ class TransitConnector:
         stops_records = []
 
         for r in CURATED_BMTC_ROUTES:
-            routes_records.append({
-                "route_id": r["route_id"],
-                "route_short_name": r["route_short_name"],
-                "origin_name": r["origin_name"],
-                "destination_name": r["destination_name"],
-                "distance_km": r["distance_km"],
-                "scheduled_duration_min": r["scheduled_duration_min"],
-                "num_stops": len(r["stops"]),
-                "dataset_mode": "observed",
-            })
+            routes_records.append(
+                {
+                    "route_id": r["route_id"],
+                    "route_short_name": r["route_short_name"],
+                    "origin_name": r["origin_name"],
+                    "destination_name": r["destination_name"],
+                    "distance_km": r["distance_km"],
+                    "scheduled_duration_min": r["scheduled_duration_min"],
+                    "num_stops": len(r["stops"]),
+                    "dataset_mode": "observed",
+                }
+            )
 
             total_stops = len(r["stops"])
             avg_time_per_segment = r["scheduled_duration_min"] / max(total_stops - 1, 1) * 60.0
 
             for seq, (stop_id, stop_name, lat, lon) in enumerate(r["stops"], start=1):
-                stops_records.append({
-                    "route_id": r["route_id"],
-                    "route_short_name": r["route_short_name"],
-                    "stop_id": stop_id,
-                    "stop_sequence": seq,
-                    "stop_name": stop_name,
-                    "stop_lat": lat,
-                    "stop_lon": lon,
-                    "scheduled_travel_time_sec": avg_time_per_segment if seq > 1 else 0.0,
-                    "dataset_mode": "observed",
-                })
+                stops_records.append(
+                    {
+                        "route_id": r["route_id"],
+                        "route_short_name": r["route_short_name"],
+                        "stop_id": stop_id,
+                        "stop_sequence": seq,
+                        "stop_name": stop_name,
+                        "stop_lat": lat,
+                        "stop_lon": lon,
+                        "scheduled_travel_time_sec": avg_time_per_segment if seq > 1 else 0.0,
+                        "dataset_mode": "observed",
+                    }
+                )
 
         df_routes = pd.DataFrame(routes_records)
         df_stops = pd.DataFrame(stops_records)
 
         df_routes.to_parquet(self.routes_file, index=False)
         df_stops.to_parquet(self.stops_file, index=False)
-        logger.info(
-            "Saved %d BMTC routes and %d stops to Parquet.",
-            len(df_routes), len(df_stops)
-        )
+        logger.info("Saved %d BMTC routes and %d stops to Parquet.", len(df_routes), len(df_stops))
         return df_routes, df_stops
 
     def get_routes(self) -> pd.DataFrame:

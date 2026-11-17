@@ -3,7 +3,6 @@
 import json
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from transitpulse.config import settings
@@ -68,20 +67,17 @@ class FeatureBuilder:
         df_full["observed_delay_min"] = df_trips["observed_delay_min"].values
         df_full["delay_category"] = df_trips["delay_category"].values
         df_full["dataset_mode"] = df_trips["dataset_mode"].values
+        if "is_telemetry_missing" in df_trips.columns:
+            df_full["is_telemetry_missing"] = df_trips["is_telemetry_missing"].values
 
-        # Multi-horizon forward targets
-        # Horizon 15m delay: delay at +15m along the route
-        # Horizon 30m delay: delay at +30m along the route
-        # Horizon 60m delay: delay at +60m along the route
-        cur_delay = df_trips["observed_delay_min"].values
-        h15_noise = np.random.normal(0.2, 0.4, len(cur_delay))
-        h30_noise = np.random.normal(0.5, 0.8, len(cur_delay))
-        h60_noise = np.random.normal(0.8, 1.4, len(cur_delay))
-
-        # Cascading delay evolution with horizon
-        df_full["delay_horizon_15m"] = np.clip(cur_delay * 0.95 + h15_noise, -2.0, 60.0).round(2)
-        df_full["delay_horizon_30m"] = np.clip(cur_delay * 0.90 + h30_noise, -2.0, 70.0).round(2)
-        df_full["delay_horizon_60m"] = np.clip(cur_delay * 0.85 + h60_noise, -2.0, 85.0).round(2)
+        # Multi-horizon forward targets (from genuine spatiotemporal trip tracking)
+        for h_col in ["delay_horizon_15m", "delay_horizon_30m", "delay_horizon_60m"]:
+            if h_col in df_trips.columns:
+                df_full[h_col] = df_trips[h_col].values
+            else:
+                # Conservative fallback if trips dataframe lacks precomputed horizons
+                cur_delay = df_trips["observed_delay_min"].values
+                df_full[h_col] = cur_delay
 
         return df_full
 
@@ -103,9 +99,15 @@ class FeatureBuilder:
 
         logger.info(
             "Chronological split complete: Train=%d (%s to %s), Val=%d (%s to %s), Test=%d (%s to %s)",
-            len(df_train), df_train["scheduled_time"].min(), df_train["scheduled_time"].max(),
-            len(df_val), df_val["scheduled_time"].min(), df_val["scheduled_time"].max(),
-            len(df_test), df_test["scheduled_time"].min(), df_test["scheduled_time"].max(),
+            len(df_train),
+            df_train["scheduled_time"].min(),
+            df_train["scheduled_time"].max(),
+            len(df_val),
+            df_val["scheduled_time"].min(),
+            df_val["scheduled_time"].max(),
+            len(df_test),
+            df_test["scheduled_time"].min(),
+            df_test["scheduled_time"].max(),
         )
 
         df_train.to_parquet(self.train_file, index=False)
@@ -113,21 +115,53 @@ class FeatureBuilder:
         df_test.to_parquet(self.test_file, index=False)
 
         # Save metadata and experiment feature groupings
-        features_e0 = ["prev_stop_delay_min", "route_code", "route_prior_mean_delay", "scheduled_travel_time_sec"]
+        features_e0 = [
+            "prev_stop_delay_min",
+            "route_code",
+            "route_prior_mean_delay",
+            "scheduled_travel_time_sec",
+        ]
         features_e1 = features_e0 + [
-            "hour_of_day", "day_of_week", "is_weekend", "is_morning_peak",
-            "is_evening_peak", "is_peak_hour", "hour_sin", "hour_cos", "dow_sin", "dow_cos"
+            "hour_of_day",
+            "day_of_week",
+            "is_weekend",
+            "is_morning_peak",
+            "is_evening_peak",
+            "is_peak_hour",
+            "hour_sin",
+            "hour_cos",
+            "dow_sin",
+            "dow_cos",
         ]
         features_e2 = features_e1 + [
-            "precip_rate_mm", "is_raining", "is_heavy_rain", "temperature_c",
-            "relative_humidity", "wind_gusts_kmh", "weather_severity_idx", "precip_rolling_3h_mm"
+            "precip_rate_mm",
+            "is_raining",
+            "is_heavy_rain",
+            "temperature_c",
+            "relative_humidity",
+            "wind_gusts_kmh",
+            "weather_severity_idx",
+            "precip_rolling_3h_mm",
         ]
         features_e3 = features_e2 + [
-            "stop_lat", "stop_lon", "dist_to_cbd_km", "stop_sequence", "route_progression_pct",
-            "road_hierarchy_level", "stop_density_1km",
-            "event_count_500m", "event_count_1km", "event_count_3km", "dist_nearest_event_km",
-            "min_to_nearest_event", "event_capacity_shock", "has_nearby_event",
-            "rain_x_peak_hour", "rain_x_road_hierarchy", "event_x_peak_hour", "weather_x_progression"
+            "stop_lat",
+            "stop_lon",
+            "dist_to_cbd_km",
+            "stop_sequence",
+            "route_progression_pct",
+            "road_hierarchy_level",
+            "stop_density_1km",
+            "event_count_500m",
+            "event_count_1km",
+            "event_count_3km",
+            "dist_nearest_event_km",
+            "min_to_nearest_event",
+            "event_capacity_shock",
+            "has_nearby_event",
+            "rain_x_peak_hour",
+            "rain_x_road_hierarchy",
+            "event_x_peak_hour",
+            "weather_x_progression",
         ]
         features_e4 = features_e3  # Complete feature set for optimized tuning
 

@@ -40,6 +40,7 @@ def cmd_features(args):
     df_trips = pd.read_parquet(settings.DATA_SIMULATED / "bmtc_simulated_trips.parquet")
     df_stops = pd.read_parquet(settings.DATA_RAW / "bmtc_stops.parquet")
     from transitpulse.ingestion.event_connector import EventConnector
+
     df_events = EventConnector().get_events()
 
     fb = FeatureBuilder()
@@ -65,11 +66,19 @@ def cmd_dashboard(args):
     """Launches Streamlit visual analytics dashboard."""
     dashboard_path = settings.PROJECT_ROOT / "dashboard" / "app.py"
     print(f"Launching Streamlit Dashboard on port {args.port}...")
-    subprocess.run([  # nosec B603
-        sys.executable, "-m", "streamlit", "run", str(dashboard_path),
-        "--server.port", str(args.port),
-        "--server.address", args.host,
-    ])
+    subprocess.run(
+        [  # nosec B603
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
+            str(dashboard_path),
+            "--server.port",
+            str(args.port),
+            "--server.address",
+            args.host,
+        ]
+    )
 
 
 def main():
@@ -90,7 +99,9 @@ def main():
     p_val.set_defaults(func=cmd_validate)
 
     # Features
-    p_feat = subparsers.add_parser("features", help="Extract spatiotemporal features and split data")
+    p_feat = subparsers.add_parser(
+        "features", help="Extract spatiotemporal features and split data"
+    )
     p_feat.set_defaults(func=cmd_features)
 
     # Train

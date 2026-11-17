@@ -1,6 +1,6 @@
 {
   "E0": {
-    "name": "E0 \u2014 Historical Baseline",
+    "name": "E0 \u2014 Historical Route Mean Baseline",
     "features_count": 4,
     "features": [
       "prev_stop_delay_min",
@@ -9,10 +9,23 @@
       "scheduled_travel_time_sec"
     ],
     "test_metrics": {
-      "mae": 5.059,
-      "rmse": 7.881,
-      "r2": 0.0162,
-      "medae": 3.7
+      "mae": 6.077,
+      "rmse": 8.55,
+      "r2": 0.0575,
+      "medae": 4.844
+    }
+  },
+  "E0_Persistence": {
+    "name": "E0 (Persistence) \u2014 Upstream Stop Delay Persistence",
+    "features_count": 1,
+    "features": [
+      "prev_stop_delay_min"
+    ],
+    "test_metrics": {
+      "mae": 2.329,
+      "rmse": 3.082,
+      "r2": 0.8776,
+      "medae": 1.921
     }
   },
   "E1": {
@@ -35,17 +48,17 @@
       "dow_cos"
     ],
     "test_metrics": {
-      "mae": 0.833,
-      "rmse": 1.676,
-      "r2": 0.9555,
-      "medae": 0.5
+      "mae": 1.549,
+      "rmse": 2.41,
+      "r2": 0.9251,
+      "medae": 1.126
     },
     "classification_metrics": {
-      "accuracy": 0.8922,
-      "macro_f1": 0.8991,
-      "macro_precision": 0.91,
-      "macro_recall": 0.8897,
-      "severe_recall": 0.88
+      "accuracy": 0.8353,
+      "macro_f1": 0.8284,
+      "macro_precision": 0.8296,
+      "macro_recall": 0.8279,
+      "severe_recall": 0.8253
     }
   },
   "E2": {
@@ -76,17 +89,17 @@
       "precip_rolling_3h_mm"
     ],
     "test_metrics": {
-      "mae": 0.827,
-      "rmse": 1.794,
-      "r2": 0.949,
-      "medae": 0.492
+      "mae": 1.566,
+      "rmse": 2.551,
+      "r2": 0.9161,
+      "medae": 1.137
     },
     "classification_metrics": {
-      "accuracy": 0.9003,
-      "macro_f1": 0.9062,
-      "macro_precision": 0.9141,
-      "macro_recall": 0.8992,
-      "severe_recall": 0.888
+      "accuracy": 0.8331,
+      "macro_f1": 0.8276,
+      "macro_precision": 0.8299,
+      "macro_recall": 0.8258,
+      "severe_recall": 0.8408
     }
   },
   "E3": {
@@ -135,84 +148,84 @@
       "weather_x_progression"
     ],
     "test_metrics": {
-      "mae": 0.927,
-      "rmse": 1.728,
-      "r2": 0.9527,
-      "medae": 0.576
+      "mae": 1.455,
+      "rmse": 2.153,
+      "r2": 0.9402,
+      "medae": 1.095
     },
     "classification_metrics": {
-      "accuracy": 0.9006,
-      "macro_f1": 0.9062,
-      "macro_precision": 0.914,
-      "macro_recall": 0.8993,
-      "severe_recall": 0.888
+      "accuracy": 0.8347,
+      "macro_f1": 0.8299,
+      "macro_precision": 0.8307,
+      "macro_recall": 0.8292,
+      "severe_recall": 0.8408
     }
   },
   "E4_LightGBM": {
     "name": "E4 \u2014 Optimized LightGBM (Production Default)",
     "best_params": {
-      "n_estimators": 350,
-      "learning_rate": 0.020881460005769875,
-      "max_depth": 9,
-      "num_leaves": 16,
-      "subsample": 0.7471805130271512,
-      "colsample_bytree": 0.6721985844999355,
-      "reg_alpha": 0.20179498679029842,
-      "reg_lambda": 0.15376875709919713
+      "n_estimators": 200,
+      "learning_rate": 0.07710450463371464,
+      "max_depth": 4,
+      "num_leaves": 44,
+      "subsample": 0.7448898139856346,
+      "colsample_bytree": 0.72879492178266,
+      "reg_alpha": 0.10412124402324446,
+      "reg_lambda": 0.23747575459457432
     },
     "test_metrics": {
-      "mae": 0.851,
-      "rmse": 1.843,
-      "r2": 0.9462,
-      "medae": 0.499
+      "mae": 1.463,
+      "rmse": 2.22,
+      "r2": 0.9365,
+      "medae": 1.074
     },
     "classification_metrics": {
-      "accuracy": 0.9014,
-      "macro_f1": 0.9078,
-      "macro_precision": 0.9163,
-      "macro_recall": 0.9002,
-      "severe_recall": 0.888
+      "accuracy": 0.8381,
+      "macro_f1": 0.8322,
+      "macro_precision": 0.8342,
+      "macro_recall": 0.8306,
+      "severe_recall": 0.8356
     },
     "latency_benchmark": {
       "latency_p50_ms": 0.3,
-      "latency_p95_ms": 0.33,
-      "latency_p99_ms": 0.42
+      "latency_p95_ms": 0.37,
+      "latency_p99_ms": 0.56
     }
   },
   "E4_XGBoost": {
     "name": "E4 \u2014 XGBoost",
     "test_metrics": {
-      "mae": 0.787,
-      "rmse": 1.633,
-      "r2": 0.9578,
-      "medae": 0.5
+      "mae": 1.382,
+      "rmse": 1.944,
+      "r2": 0.9513,
+      "medae": 1.086
     },
     "latency_benchmark": {
-      "latency_p50_ms": 0.84,
-      "latency_p95_ms": 1.05,
-      "latency_p99_ms": 1.32
+      "latency_p50_ms": 0.85,
+      "latency_p95_ms": 1.03,
+      "latency_p99_ms": 1.42
     }
   },
   "E4_CatBoost": {
     "name": "E4 \u2014 CatBoost",
     "test_metrics": {
-      "mae": 1.153,
-      "rmse": 3.698,
-      "r2": 0.7834,
-      "medae": 0.494
+      "mae": 1.621,
+      "rmse": 3.225,
+      "r2": 0.8659,
+      "medae": 1.072
     }
   },
   "slices_analysis": {
-    "peak_hour_mae": 0.568,
-    "offpeak_hour_mae": 1.061,
-    "rain_condition_mae": 1.432,
-    "clear_condition_mae": 0.556,
+    "peak_hour_mae": 1.273,
+    "offpeak_hour_mae": 1.603,
+    "rain_condition_mae": 1.731,
+    "clear_condition_mae": 1.245,
     "route_level_mae": {
-      "201-R": 0.728,
-      "335-E": 0.906,
-      "500-D": 0.882,
-      "G-2": 0.843,
-      "KIA-9": 0.833
+      "201-R": 1.244,
+      "335-E": 1.517,
+      "500-D": 1.535,
+      "G-2": 1.485,
+      "KIA-9": 1.421
     }
   }
 }

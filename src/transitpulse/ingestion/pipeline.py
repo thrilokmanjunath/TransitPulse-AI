@@ -44,7 +44,9 @@ class IngestionPipeline:
         df_routes, df_stops = self.transit_conn.fetch_and_save_topology()
 
         # 2. Ingest Weather
-        df_weather = self.weather_conn.fetch_historical_weather(start_date=start_date, end_date=end_date)
+        df_weather = self.weather_conn.fetch_historical_weather(
+            start_date=start_date, end_date=end_date
+        )
 
         # 3. Ingest Events
         df_events = self.event_conn.fetch_and_save_events()

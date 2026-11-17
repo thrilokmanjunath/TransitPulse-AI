@@ -53,22 +53,26 @@ class QualityReporter:
                 f"| **{r.dataset_name}** | {r.total_records:,} | {total_nulls} | {r.duplicate_rows} | {r.geo_bounds_violations} | {total_outliers} | **{status_badge}** |"
             )
 
-        md_lines.extend([
-            "",
-            "---",
-            "",
-            "## 2. Detailed Entity Diagnostics",
-            "",
-        ])
+        md_lines.extend(
+            [
+                "",
+                "---",
+                "",
+                "## 2. Detailed Entity Diagnostics",
+                "",
+            ]
+        )
 
         for r in reports:
-            md_lines.extend([
-                f"### {r.dataset_name}",
-                f"- **Validation Passed:** `{r.passed_validation}`",
-                f"- **Duplicate Records:** `{r.duplicate_rows}`",
-                f"- **Geographic Violations:** `{r.geo_bounds_violations}`",
-                "- **Null Breakdown:**",
-            ])
+            md_lines.extend(
+                [
+                    f"### {r.dataset_name}",
+                    f"- **Validation Passed:** `{r.passed_validation}`",
+                    f"- **Duplicate Records:** `{r.duplicate_rows}`",
+                    f"- **Geographic Violations:** `{r.geo_bounds_violations}`",
+                    "- **Null Breakdown:**",
+                ]
+            )
             for col, count in r.null_counts.items():
                 if count > 0:
                     md_lines.append(f"  - `{col}`: {count} nulls")
@@ -84,15 +88,17 @@ class QualityReporter:
                 md_lines.append(f"  - {msg}")
             md_lines.append("")
 
-        md_lines.extend([
-            "---",
-            "",
-            "## 3. Data Integrity & Governance Certification",
-            "> [!NOTE]",
-            "> All coordinate pairs conform strictly to WGS-84 geometry for Greater Bengaluru.",
-            "> Timestamps have been validated for strict monotonic progression with timezone `Asia/Kolkata`.",
-            "> No synthetic records are labeled as `observed` BMTC telemetry.",
-        ])
+        md_lines.extend(
+            [
+                "---",
+                "",
+                "## 3. Data Integrity & Governance Certification",
+                "> [!NOTE]",
+                "> All coordinate pairs conform strictly to WGS-84 geometry for Greater Bengaluru.",
+                "> Timestamps have been validated for strict monotonic progression with timezone `Asia/Kolkata`.",
+                "> No synthetic records are labeled as `observed` BMTC telemetry.",
+            ]
+        )
 
         content = "\n".join(md_lines)
         with open(self.report_file, "w", encoding="utf-8") as f:

@@ -44,7 +44,9 @@ def test_production_model_loading_and_shap():
         pytest.skip("Sample test records not found.")
 
     with open(settings.DATA_PROCESSED / "feature_metadata.json", "r") as f:
-        meta = pd.read_json(settings.DATA_PROCESSED / "feature_metadata.json", typ="series").to_dict()
+        meta = pd.read_json(
+            settings.DATA_PROCESSED / "feature_metadata.json", typ="series"
+        ).to_dict()
     features = meta["experiment_feature_sets"]["E4"]
 
     df_sample = pd.read_parquet(sample_path).head(5)

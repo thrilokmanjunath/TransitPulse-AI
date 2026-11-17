@@ -15,6 +15,7 @@ logger = get_logger(__name__)
 
 class ValidationReport(BaseModel):
     """Structured quality assessment report."""
+
     dataset_name: str
     total_records: int
     null_counts: dict[str, int]
@@ -49,14 +50,18 @@ class SchemaValidator:
         # Sequence must be positive
         outliers["negative_sequence"] = int((df["stop_sequence"] <= 0).sum())
 
-        passed = (duplicates == 0) and (geo_violations == 0) and (null_counts.get("stop_id", 0) == 0)
+        passed = (
+            (duplicates == 0) and (geo_violations == 0) and (null_counts.get("stop_id", 0) == 0)
+        )
         messages = []
         if geo_violations > 0:
             messages.append(f"Detected {geo_violations} stops outside Bengaluru coordinates.")
         if duplicates > 0:
             messages.append(f"Detected {duplicates} duplicate route-sequence pairs.")
         if passed:
-            messages.append("All BMTC stop schemas, coordinate bounds, and sequence orderings passed.")
+            messages.append(
+                "All BMTC stop schemas, coordinate bounds, and sequence orderings passed."
+            )
 
         return ValidationReport(
             dataset_name="BMTC Stops",
@@ -118,9 +123,13 @@ class SchemaValidator:
         passed = (duplicates == 0) and (geo_violations == 0) and (outliers["extreme_delay"] == 0)
         messages = []
         if passed:
-            messages.append("All transit operational delay records conform to schema specifications.")
+            messages.append(
+                "All transit operational delay records conform to schema specifications."
+            )
         else:
-            messages.append(f"Trips validation issues: duplicates={duplicates}, geo={geo_violations}, outliers={outliers}")
+            messages.append(
+                f"Trips validation issues: duplicates={duplicates}, geo={geo_violations}, outliers={outliers}"
+            )
 
         return ValidationReport(
             dataset_name="Transit Trips",

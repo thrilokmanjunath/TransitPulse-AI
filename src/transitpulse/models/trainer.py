@@ -11,6 +11,7 @@ import pandas as pd
 from transitpulse.config import settings
 from transitpulse.models.baselines import (
     HistoricalMeanBaseline,
+    PersistenceBaseline,
 )
 from transitpulse.models.evaluator import ModelEvaluator
 from transitpulse.models.multi_horizon import MultiHorizonForecaster
@@ -29,7 +30,7 @@ class ExperimentTrainer:
         self.artifacts_dir.mkdir(parents=True, exist_ok=True)
         self.metadata_file = self.artifacts_dir / "model_metadata.json"
         self.results_file = self.artifacts_dir / "experiment_results.json"
-        
+
         # Setup SQLite database MLflow tracking
         db_path = settings.PROJECT_ROOT / "mlflow.db"
         mlflow_uri = f"sqlite:///{db_path}"
@@ -59,21 +60,38 @@ class ExperimentTrainer:
         results: dict[str, Any] = {}
 
         # ==========================================
-        # E0: Historical Baseline
+        # E0: Baseline Models
         # ==========================================
-        logger.info("Executing Experiment E0: Historical Baseline...")
+        logger.info("Executing Experiment E0: Historical & Persistence Baselines...")
         with mlflow.start_run(run_name="E0_Historical_Baseline"):
             e0_cols = exp_features["E0"]
             base_model = HistoricalMeanBaseline().fit(df_train[e0_cols], y_train_reg)
             e0_preds = base_model.predict(df_test[e0_cols])
             e0_metrics = evaluator.evaluate_regression(y_test_reg, e0_preds)
-            mlflow.log_params({"experiment": "E0", "features": len(e0_cols)})
+            mlflow.log_params(
+                {"experiment": "E0", "baseline_type": "historical_mean", "features": len(e0_cols)}
+            )
             mlflow.log_metrics(e0_metrics)
             results["E0"] = {
-                "name": "E0 — Historical Baseline",
+                "name": "E0 — Historical Route Mean Baseline",
                 "features_count": len(e0_cols),
                 "features": e0_cols,
                 "test_metrics": e0_metrics,
+            }
+
+        with mlflow.start_run(run_name="E0_Persistence_Baseline"):
+            pers_model = PersistenceBaseline().fit(df_train[e0_cols], y_train_reg)
+            pers_preds = pers_model.predict(df_test[e0_cols])
+            pers_metrics = evaluator.evaluate_regression(y_test_reg, pers_preds)
+            mlflow.log_params(
+                {"experiment": "E0_Persistence", "baseline_type": "persistence", "features": 1}
+            )
+            mlflow.log_metrics(pers_metrics)
+            results["E0_Persistence"] = {
+                "name": "E0 (Persistence) — Upstream Stop Delay Persistence",
+                "features_count": 1,
+                "features": ["prev_stop_delay_min"],
+                "test_metrics": pers_metrics,
             }
 
         # ==========================================
@@ -83,7 +101,12 @@ class ExperimentTrainer:
         with mlflow.start_run(run_name="E1_Transit_Temporal"):
             e1_cols = exp_features["E1"]
             e1_model = LightGBMModel()
-            e1_model.fit(df_train[e1_cols], y_train_reg, y_train_cls, eval_set_reg=(df_val[e1_cols], y_val_reg))
+            e1_model.fit(
+                df_train[e1_cols],
+                y_train_reg,
+                y_train_cls,
+                eval_set_reg=(df_val[e1_cols], y_val_reg),
+            )
             e1_preds = e1_model.predict_reg(df_test[e1_cols])
             e1_preds_cls = e1_model.predict_cls(df_test[e1_cols])
             e1_metrics = evaluator.evaluate_regression(y_test_reg, e1_preds)
@@ -105,7 +128,12 @@ class ExperimentTrainer:
         with mlflow.start_run(run_name="E2_Transit_Weather"):
             e2_cols = exp_features["E2"]
             e2_model = LightGBMModel()
-            e2_model.fit(df_train[e2_cols], y_train_reg, y_train_cls, eval_set_reg=(df_val[e2_cols], y_val_reg))
+            e2_model.fit(
+                df_train[e2_cols],
+                y_train_reg,
+                y_train_cls,
+                eval_set_reg=(df_val[e2_cols], y_val_reg),
+            )
             e2_preds = e2_model.predict_reg(df_test[e2_cols])
             e2_preds_cls = e2_model.predict_cls(df_test[e2_cols])
             e2_metrics = evaluator.evaluate_regression(y_test_reg, e2_preds)
@@ -127,7 +155,12 @@ class ExperimentTrainer:
         with mlflow.start_run(run_name="E3_Full_Multimodal"):
             e3_cols = exp_features["E3"]
             e3_model = LightGBMModel()
-            e3_model.fit(df_train[e3_cols], y_train_reg, y_train_cls, eval_set_reg=(df_val[e3_cols], y_val_reg))
+            e3_model.fit(
+                df_train[e3_cols],
+                y_train_reg,
+                y_train_cls,
+                eval_set_reg=(df_val[e3_cols], y_val_reg),
+            )
             e3_preds = e3_model.predict_reg(df_test[e3_cols])
             e3_preds_cls = e3_model.predict_cls(df_test[e3_cols])
             e3_metrics = evaluator.evaluate_regression(y_test_reg, e3_preds)
@@ -154,12 +187,19 @@ class ExperimentTrainer:
 
         with mlflow.start_run(run_name="E4_Optimized_LightGBM"):
             lgb_opt = LightGBMModel(params=best_lgb_params)
-            lgb_opt.fit(df_train[e4_cols], y_train_reg, y_train_cls, eval_set_reg=(df_val[e4_cols], y_val_reg))
+            lgb_opt.fit(
+                df_train[e4_cols],
+                y_train_reg,
+                y_train_cls,
+                eval_set_reg=(df_val[e4_cols], y_val_reg),
+            )
             lgb_test_preds = lgb_opt.predict_reg(df_test[e4_cols])
             lgb_test_cls = lgb_opt.predict_cls(df_test[e4_cols])
             lgb_metrics = evaluator.evaluate_regression(y_test_reg, lgb_test_preds)
             lgb_cls_metrics = evaluator.evaluate_classification(y_test_cls, lgb_test_cls)
-            lgb_latency = evaluator.benchmark_latency(lgb_opt.predict_reg, df_test[e4_cols], n_iterations=300)
+            lgb_latency = evaluator.benchmark_latency(
+                lgb_opt.predict_reg, df_test[e4_cols], n_iterations=300
+            )
             mlflow.log_params(best_lgb_params)
             mlflow.log_metrics({**lgb_metrics, **lgb_cls_metrics, **lgb_latency})
             results["E4_LightGBM"] = {
@@ -174,10 +214,17 @@ class ExperimentTrainer:
         logger.info("Training XGBoost on E4 feature set...")
         with mlflow.start_run(run_name="E4_XGBoost"):
             xgb_model = XGBoostModel()
-            xgb_model.fit(df_train[e4_cols], y_train_reg, y_train_cls, eval_set_reg=(df_val[e4_cols], y_val_reg))
+            xgb_model.fit(
+                df_train[e4_cols],
+                y_train_reg,
+                y_train_cls,
+                eval_set_reg=(df_val[e4_cols], y_val_reg),
+            )
             xgb_preds = xgb_model.predict_reg(df_test[e4_cols])
             xgb_metrics = evaluator.evaluate_regression(y_test_reg, xgb_preds)
-            xgb_latency = evaluator.benchmark_latency(xgb_model.predict_reg, df_test[e4_cols], n_iterations=200)
+            xgb_latency = evaluator.benchmark_latency(
+                xgb_model.predict_reg, df_test[e4_cols], n_iterations=200
+            )
             mlflow.log_metrics({**xgb_metrics, **xgb_latency})
             results["E4_XGBoost"] = {
                 "name": "E4 — XGBoost",
@@ -221,7 +268,9 @@ class ExperimentTrainer:
         joblib.dump(xgb_model, self.artifacts_dir / "xgboost_model.joblib")
 
         # Save test sample for dashboard / API smoke testing
-        df_test.head(100).to_parquet(self.artifacts_dir / "sample_test_records.parquet", index=False)
+        df_test.head(100).to_parquet(
+            self.artifacts_dir / "sample_test_records.parquet", index=False
+        )
 
         # Save model metadata
         metadata = {

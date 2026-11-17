@@ -17,7 +17,9 @@ def get_model_info() -> ModelInfoResponse:
     """Returns architecture metadata, features, and parameter provenance."""
     meta_path = settings.ARTIFACTS_DIR / "model_metadata.json"
     if not meta_path.exists():
-        raise HTTPException(status_code=503, detail="Model metadata not found. Run training pipeline first.")
+        raise HTTPException(
+            status_code=503, detail="Model metadata not found. Run training pipeline first."
+        )
 
     with open(meta_path, "r", encoding="utf-8") as f:
         meta = json.load(f)
@@ -41,7 +43,9 @@ def get_model_metrics() -> ModelMetricsResponse:
     results_path = settings.ARTIFACTS_DIR / "experiment_results.json"
     meta_path = settings.ARTIFACTS_DIR / "model_metadata.json"
     if not results_path.exists() or not meta_path.exists():
-        raise HTTPException(status_code=503, detail="Model results not found. Run training pipeline first.")
+        raise HTTPException(
+            status_code=503, detail="Model results not found. Run training pipeline first."
+        )
 
     with open(results_path, "r", encoding="utf-8") as f:
         results = json.load(f)
@@ -66,7 +70,9 @@ def check_drift():
     train_path = settings.DATA_PROCESSED / "train.parquet"
     test_path = settings.DATA_PROCESSED / "test.parquet"
     if not train_path.exists() or not test_path.exists():
-        raise HTTPException(status_code=503, detail="Processed data not found for drift calculation.")
+        raise HTTPException(
+            status_code=503, detail="Processed data not found for drift calculation."
+        )
 
     df_train = pd.read_parquet(train_path)
     df_test = pd.read_parquet(test_path)

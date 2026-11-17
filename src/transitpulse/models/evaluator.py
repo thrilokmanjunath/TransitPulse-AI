@@ -44,7 +44,7 @@ class ModelEvaluator:
         recall = float(recall_score(y_true, y_pred, average="macro", zero_division=0))
 
         # Severe delay recall (Class "Severe")
-        severe_mask = (y_true == "Severe")
+        severe_mask = y_true == "Severe"
         if np.sum(severe_mask) > 0:
             severe_recall = float(np.sum((y_pred == "Severe") & severe_mask) / np.sum(severe_mask))
         else:
@@ -59,7 +59,9 @@ class ModelEvaluator:
         }
 
     @staticmethod
-    def benchmark_latency(model_predict_fn, sample_X: pd.DataFrame, n_iterations: int = 500) -> dict[str, float]:
+    def benchmark_latency(
+        model_predict_fn, sample_X: pd.DataFrame, n_iterations: int = 500
+    ) -> dict[str, float]:
         """Measures single-instance inference latency (ms)."""
         latencies_ms = []
         # Warmup
@@ -87,14 +89,18 @@ class ModelEvaluator:
 
         # 1. Peak vs Off-Peak
         if "is_peak_hour" in df_eval.columns:
-            peak_mae = float(mean_absolute_error(
-                df_eval[df_eval["is_peak_hour"] == 1]["y_true"],
-                df_eval[df_eval["is_peak_hour"] == 1]["y_pred"],
-            ))
-            offpeak_mae = float(mean_absolute_error(
-                df_eval[df_eval["is_peak_hour"] == 0]["y_true"],
-                df_eval[df_eval["is_peak_hour"] == 0]["y_pred"],
-            ))
+            peak_mae = float(
+                mean_absolute_error(
+                    df_eval[df_eval["is_peak_hour"] == 1]["y_true"],
+                    df_eval[df_eval["is_peak_hour"] == 1]["y_pred"],
+                )
+            )
+            offpeak_mae = float(
+                mean_absolute_error(
+                    df_eval[df_eval["is_peak_hour"] == 0]["y_true"],
+                    df_eval[df_eval["is_peak_hour"] == 0]["y_pred"],
+                )
+            )
             slices["peak_hour_mae"] = round(peak_mae, 3)
             slices["offpeak_hour_mae"] = round(offpeak_mae, 3)
 
@@ -102,16 +108,20 @@ class ModelEvaluator:
         if "is_raining" in df_eval.columns:
             rain_mask = df_eval["is_raining"] == 1
             if rain_mask.sum() > 0:
-                rain_mae = float(mean_absolute_error(
-                    df_eval[rain_mask]["y_true"],
-                    df_eval[rain_mask]["y_pred"],
-                ))
+                rain_mae = float(
+                    mean_absolute_error(
+                        df_eval[rain_mask]["y_true"],
+                        df_eval[rain_mask]["y_pred"],
+                    )
+                )
             else:
                 rain_mae = 0.0
-            clear_mae = float(mean_absolute_error(
-                df_eval[~rain_mask]["y_true"],
-                df_eval[~rain_mask]["y_pred"],
-            ))
+            clear_mae = float(
+                mean_absolute_error(
+                    df_eval[~rain_mask]["y_true"],
+                    df_eval[~rain_mask]["y_pred"],
+                )
+            )
             slices["rain_condition_mae"] = round(rain_mae, 3)
             slices["clear_condition_mae"] = round(clear_mae, 3)
 
@@ -119,7 +129,9 @@ class ModelEvaluator:
         route_maes = {}
         if "route_id" in df_eval.columns:
             for rid, grp in df_eval.groupby("route_id"):
-                route_maes[str(rid)] = round(float(mean_absolute_error(grp["y_true"], grp["y_pred"])), 3)
+                route_maes[str(rid)] = round(
+                    float(mean_absolute_error(grp["y_true"], grp["y_pred"])), 3
+                )
             slices["route_level_mae"] = route_maes
 
         return slices

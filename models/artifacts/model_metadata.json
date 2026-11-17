@@ -47,27 +47,27 @@
   ],
   "feature_count": 40,
   "optuna_best_params": {
-    "n_estimators": 350,
-    "learning_rate": 0.020881460005769875,
-    "max_depth": 9,
-    "num_leaves": 16,
-    "subsample": 0.7471805130271512,
-    "colsample_bytree": 0.6721985844999355,
-    "reg_alpha": 0.20179498679029842,
-    "reg_lambda": 0.15376875709919713
+    "n_estimators": 200,
+    "learning_rate": 0.07710450463371464,
+    "max_depth": 4,
+    "num_leaves": 44,
+    "subsample": 0.7448898139856346,
+    "colsample_bytree": 0.72879492178266,
+    "reg_alpha": 0.10412124402324446,
+    "reg_lambda": 0.23747575459457432
   },
-  "final_test_mae": 0.851,
-  "final_test_rmse": 1.843,
-  "final_test_r2": 0.9462,
-  "final_test_accuracy": 0.9014,
-  "final_test_macro_f1": 0.9078,
-  "severe_delay_recall": 0.888,
-  "p95_latency_ms": 0.33,
+  "final_test_mae": 1.463,
+  "final_test_rmse": 2.22,
+  "final_test_r2": 0.9365,
+  "final_test_accuracy": 0.8381,
+  "final_test_macro_f1": 0.8322,
+  "severe_delay_recall": 0.8356,
+  "p95_latency_ms": 0.37,
   "horizons_supported": [
     15,
     30,
     60
   ],
   "dataset_mode": "simulated",
-  "timestamp": "2026-11-17T20:04:08.642617"
+  "timestamp": "2026-11-17T20:37:48.346230"
 }
