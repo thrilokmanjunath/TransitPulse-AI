@@ -6,7 +6,7 @@ import pandas as pd
 
 def extract_transit_lag_features(df: pd.DataFrame) -> pd.DataFrame:
     """Extracts upstream stop delay and route identifier encodings.
-    
+
     Strictly zero-leakage: only observed delay at the PREVIOUS upstream stop
     is used as a feature for predicting the current stop.
     """
@@ -33,7 +33,9 @@ def extract_transit_lag_features(df: pd.DataFrame) -> pd.DataFrame:
         "G-2": 5.1,
         "201-R": 3.9,
     }
-    df_feat["route_prior_mean_delay"] = df["route_id"].map(route_priors).fillna(4.0).astype(np.float32)
+    df_feat["route_prior_mean_delay"] = (
+        df["route_id"].map(route_priors).fillna(4.0).astype(np.float32)
+    )
 
     return df_feat
 
@@ -48,9 +50,9 @@ def extract_interaction_features(
     df_feat = pd.DataFrame(index=df_temp.index)
 
     # 1. Rain x Peak Hour Interaction (Major urban bottleneck amplifier)
-    df_feat["rain_x_peak_hour"] = (
-        df_weather["precip_rate_mm"] * df_temp["is_peak_hour"]
-    ).astype(np.float32)
+    df_feat["rain_x_peak_hour"] = (df_weather["precip_rate_mm"] * df_temp["is_peak_hour"]).astype(
+        np.float32
+    )
 
     # 2. Rain x Road Hierarchy (Drainage & speed drop on high-speed ring roads)
     df_feat["rain_x_road_hierarchy"] = (

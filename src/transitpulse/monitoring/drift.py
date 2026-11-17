@@ -37,8 +37,11 @@ class DriftMonitor:
     def detect_drift(self, current_df: pd.DataFrame, features: list[str] = None) -> dict[str, Any]:
         """Runs KS-tests and PSI across feature distributions."""
         cols = features or [
-            "prev_stop_delay_min", "precip_rate_mm", "temperature_c",
-            "hour_of_day", "dist_nearest_event_km"
+            "prev_stop_delay_min",
+            "precip_rate_mm",
+            "temperature_c",
+            "hour_of_day",
+            "dist_nearest_event_km",
         ]
         drift_results = {}
         drift_detected_count = 0
@@ -65,7 +68,11 @@ class DriftMonitor:
                     "drift_status": "Drift Detected" if is_drift else "Stable",
                 }
 
-        overall_status = "Action Required" if drift_detected_count >= 2 else ("Minor Drift" if drift_detected_count == 1 else "Healthy")
+        overall_status = (
+            "Action Required"
+            if drift_detected_count >= 2
+            else ("Minor Drift" if drift_detected_count == 1 else "Healthy")
+        )
 
         return {
             "overall_status": overall_status,

@@ -6,7 +6,7 @@ import pandas as pd
 
 def extract_weather_features(df: pd.DataFrame) -> pd.DataFrame:
     """Extracts non-linear meteorological and interaction features.
-    
+
     Guarantees zero-leakage: observations reflect strictly retrospective or forecast vintage.
     """
     df_feat = pd.DataFrame(index=df.index)

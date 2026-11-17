@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 class RouteResponse(BaseModel):
     """BMTC Route Information."""
+
     route_id: str
     route_short_name: str
     origin_name: str
@@ -18,6 +19,7 @@ class RouteResponse(BaseModel):
 
 class StopResponse(BaseModel):
     """BMTC Stop Information."""
+
     route_id: str
     stop_id: str
     stop_sequence: int
@@ -29,23 +31,33 @@ class StopResponse(BaseModel):
 
 class PredictionRequest(BaseModel):
     """Input payload for delay prediction."""
+
     route_id: str = Field(..., description="BMTC Route Identifier (e.g., '335-E', '500-D')")
     stop_sequence: int = Field(1, description="1-based stop sequence index along the route")
-    prev_stop_delay_min: float = Field(0.0, description="Observed arrival delay in minutes at previous stop")
-    scheduled_time: str | None = Field(None, description="ISO-8601 scheduled timestamp in IST (e.g. 2024-05-18T19:30:00+05:30)")
-    
+    prev_stop_delay_min: float = Field(
+        0.0, description="Observed arrival delay in minutes at previous stop"
+    )
+    scheduled_time: str | None = Field(
+        None, description="ISO-8601 scheduled timestamp in IST (e.g. 2024-05-18T19:30:00+05:30)"
+    )
+
     # Optional weather overrides (if omitted, uses live Open-Meteo forecast)
     precip_mm: float | None = Field(None, ge=0.0, description="Precipitation rate in mm/hour")
     temperature_c: float | None = Field(None, description="Temperature in Celsius")
-    relative_humidity: float | None = Field(None, ge=0.0, le=100.0, description="Relative humidity %")
+    relative_humidity: float | None = Field(
+        None, ge=0.0, le=100.0, description="Relative humidity %"
+    )
     wind_gusts_kmh: float | None = Field(None, ge=0.0, description="Wind gusts speed in km/h")
 
     # Optional manual event override
-    is_event_active: bool | None = Field(False, description="Manual flag indicating nearby stadium/concert event")
+    is_event_active: bool | None = Field(
+        False, description="Manual flag indicating nearby stadium/concert event"
+    )
 
 
 class PredictionResponse(BaseModel):
     """Delay prediction response with multi-horizon values and explainability."""
+
     route_id: str
     stop_sequence: int
     prediction_timestamp: str
@@ -59,6 +71,7 @@ class PredictionResponse(BaseModel):
 
 class ScenarioRequest(BaseModel):
     """Simulation scenario evaluation payload."""
+
     route_id: str
     scenario_name: str
     rain_intensity_mm: float = Field(0.0, ge=0.0, le=50.0)
@@ -69,6 +82,7 @@ class ScenarioRequest(BaseModel):
 
 class ScenarioResponse(BaseModel):
     """Simulated scenario impact response."""
+
     scenario_name: str
     route_id: str
     baseline_delay_min: float
@@ -80,6 +94,7 @@ class ScenarioResponse(BaseModel):
 
 class ModelInfoResponse(BaseModel):
     """Model governance metadata response."""
+
     model_name: str
     version: str
     framework: str
@@ -93,6 +108,7 @@ class ModelInfoResponse(BaseModel):
 
 class ModelMetricsResponse(BaseModel):
     """Validation and test metrics response."""
+
     model_name: str
     test_mae: float
     test_rmse: float

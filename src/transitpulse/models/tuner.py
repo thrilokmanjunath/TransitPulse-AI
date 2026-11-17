@@ -58,6 +58,7 @@ class OptunaTuner:
 
         logger.info(
             "Optuna optimization finished. Best Validation MAE: %.4f with params: %s",
-            study.best_value, study.best_params
+            study.best_value,
+            study.best_params,
         )
         return study.best_params

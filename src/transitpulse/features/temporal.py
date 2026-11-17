@@ -6,7 +6,7 @@ import pandas as pd
 
 def extract_temporal_features(df: pd.DataFrame, time_col: str = "scheduled_time") -> pd.DataFrame:
     """Extracts calendar, diurnal, cyclical, and peak-hour transit features.
-    
+
     Guarantees zero-leakage: relies purely on scheduled clock timestamp.
     """
     df_feat = pd.DataFrame(index=df.index)

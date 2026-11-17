@@ -61,19 +61,15 @@ class RandomForestBaseline:
 
     def __init__(self, n_estimators: int = 100, max_depth: int = 10):
         self.regressor = RandomForestRegressor(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            n_jobs=-1,
-            random_state=42
+            n_estimators=n_estimators, max_depth=max_depth, n_jobs=-1, random_state=42
         )
         self.classifier = RandomForestClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            n_jobs=-1,
-            random_state=42
+            n_estimators=n_estimators, max_depth=max_depth, n_jobs=-1, random_state=42
         )
 
-    def fit(self, X: pd.DataFrame, y_reg: np.ndarray, y_cls: np.ndarray | None = None) -> "RandomForestBaseline":
+    def fit(
+        self, X: pd.DataFrame, y_reg: np.ndarray, y_cls: np.ndarray | None = None
+    ) -> "RandomForestBaseline":
         self.regressor.fit(X.fillna(0.0), y_reg)
         if y_cls is not None:
             self.classifier.fit(X.fillna(0.0), y_cls)

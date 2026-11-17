@@ -42,15 +42,24 @@ def test_no_future_target_in_training_features():
         pytest.skip("Data not ready.")
 
     import json
+
     with open(meta_path, "r") as f:
         meta = json.load(f)
 
     for exp_id, features in meta["experiment_feature_sets"].items():
         assert "observed_delay_min" not in features, f"Target leaked into {exp_id} feature set!"
-        assert "delay_category" not in features, f"Target category leaked into {exp_id} feature set!"
-        assert "delay_horizon_15m" not in features, f"Future horizon leaked into {exp_id} feature set!"
-        assert "delay_horizon_30m" not in features, f"Future horizon leaked into {exp_id} feature set!"
-        assert "delay_horizon_60m" not in features, f"Future horizon leaked into {exp_id} feature set!"
+        assert "delay_category" not in features, (
+            f"Target category leaked into {exp_id} feature set!"
+        )
+        assert "delay_horizon_15m" not in features, (
+            f"Future horizon leaked into {exp_id} feature set!"
+        )
+        assert "delay_horizon_30m" not in features, (
+            f"Future horizon leaked into {exp_id} feature set!"
+        )
+        assert "delay_horizon_60m" not in features, (
+            f"Future horizon leaked into {exp_id} feature set!"
+        )
 
 
 def test_trip_boundary_independence():

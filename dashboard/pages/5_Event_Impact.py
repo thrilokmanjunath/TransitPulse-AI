@@ -1,16 +1,17 @@
 """Page 5: Urban Event Impact Analysis."""
 
-import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
+import streamlit as st
 
 from transitpulse.config import settings
 from transitpulse.ingestion.event_connector import EventConnector
 from transitpulse.ingestion.transit_connector import TransitConnector
 
 st.title("🏟️ Urban Event Shockwaves & Spatial Proximity")
-st.markdown("Analysis of mega-event crowd gravity, venue distance decay, and transit corridor disruption.")
+st.markdown(
+    "Analysis of mega-event crowd gravity, venue distance decay, and transit corridor disruption."
+)
 
 event_conn = EventConnector()
 df_events = event_conn.get_events()
@@ -47,7 +48,9 @@ with c1:
 with c2:
     st.subheader("Venue Capacity & Category Directory")
     st.dataframe(
-        df_events[["event_name", "venue_name", "event_category", "expected_attendance", "start_time"]],
+        df_events[
+            ["event_name", "venue_name", "event_category", "expected_attendance", "start_time"]
+        ],
         use_container_width=True,
         hide_index=True,
     )
@@ -65,9 +68,13 @@ if sim_file.exists():
     df_near["Distance Ring"] = pd.cut(
         df_near["dist_nearest_event_km"],
         bins=[0.0, 0.5, 1.0, 2.0, 3.5, 5.0, 8.0],
-        labels=["<500m", "500m-1km", "1-2km", "2-3.5km", "3.5-5km", "5-8km"]
+        labels=["<500m", "500m-1km", "1-2km", "2-3.5km", "3.5-5km", "5-8km"],
     )
-    decay_summary = df_near.groupby("Distance Ring", observed=False)["observed_delay_min"].agg(["mean", "std", "count"]).reset_index()
+    decay_summary = (
+        df_near.groupby("Distance Ring", observed=False)["observed_delay_min"]
+        .agg(["mean", "std", "count"])
+        .reset_index()
+    )
 
     col_d1, col_d2 = st.columns(2)
     with col_d1:

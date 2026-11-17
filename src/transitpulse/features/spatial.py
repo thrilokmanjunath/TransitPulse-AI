@@ -38,14 +38,16 @@ def extract_spatial_features(df: pd.DataFrame, df_stops: pd.DataFrame) -> pd.Dat
     df_feat["route_progression_pct"] = (df["stop_sequence"] / route_max_seq).astype(np.float32)
 
     # 3. Scheduled travel time (sec)
-    df_feat["scheduled_travel_time_sec"] = df["scheduled_travel_time_sec"].fillna(0.0).astype(np.float32)
+    df_feat["scheduled_travel_time_sec"] = (
+        df["scheduled_travel_time_sec"].fillna(0.0).astype(np.float32)
+    )
 
     # 4. Road hierarchy proxy (Arterial / Outer Ring Road vs Radial)
     # ORR (route 500-D) and Airport Road (KIA-9) are high-capacity express corridors (Hierarchy 4)
     hierarchy = np.full(len(df), 2, dtype=np.int8)  # Secondary arterial default
-    hierarchy[df["route_id"] == "500-D"] = 4       # Trunk / Ring highway
-    hierarchy[df["route_id"] == "KIA-9"] = 4       # Airport Expressway
-    hierarchy[df["route_id"] == "335-E"] = 3       # Major Radial IT Corridor
+    hierarchy[df["route_id"] == "500-D"] = 4  # Trunk / Ring highway
+    hierarchy[df["route_id"] == "KIA-9"] = 4  # Airport Expressway
+    hierarchy[df["route_id"] == "335-E"] = 3  # Major Radial IT Corridor
     df_feat["road_hierarchy_level"] = hierarchy
 
     # 5. Local stop density proxy (stops within 1.5 km in BMTC topology)

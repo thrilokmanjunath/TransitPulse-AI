@@ -45,7 +45,9 @@ class MultiHorizonForecaster:
             y_train = df_train_full[target_col].values
             y_val = df_val_full[target_col].values
 
-            logger.info("Training %d-minute forward horizon model on %d features...", h, X_train.shape[1])
+            logger.info(
+                "Training %d-minute forward horizon model on %d features...", h, X_train.shape[1]
+            )
             model = lgb.LGBMRegressor(**base_params)
             model.fit(
                 X_train,
