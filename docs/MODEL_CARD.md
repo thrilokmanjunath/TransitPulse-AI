@@ -46,18 +46,18 @@ Adheres to the standardized reporting framework proposed by Mitchell et al. (201
 ---
 
 ## 4. Evaluation Methodology & Benchmark Results
-Evaluated on out-of-time test cohort (held out chronologically from May 12 to May 14, 2024):
+Evaluated on out-of-time test cohort (held out chronologically from May 12 to May 14, 2024; $B=2,000$ paired bootstrap resamples):
 
-| Experiment | Feature Set | Test MAE (min) | Test RMSE (min) | Test $R^2$ | Macro F1 | Severe Delay Recall |
-|---|---|---|---|---|---|---|
-| **$E_0$ (Historical)** | Historical Route Mean Baseline | 6.077 | 8.550 | 0.0575 | — | — |
-| **$E_{0,\text{pers}}$ (Persistence)** | Upstream Delay Persistence Baseline | 2.329 | 3.082 | 0.8776 | — | — |
-| **$E_1$** | Transit + Temporal (LightGBM) | 1.549 | 2.410 | 0.9251 | 0.828 | 0.825 |
-| **$E_2$** | Transit + Temporal + Weather | 1.566 | 2.551 | 0.9161 | 0.828 | 0.841 |
-| **$E_3$** | Full Multimodal (Weather + Events + Spatial) | 1.455 | 2.153 | 0.9402 | 0.830 | 0.841 |
-| **$E_4$ (LightGBM)** | **Optuna-Tuned LightGBM (Production Default)** | **1.463** | **2.220** | **0.9365** | **0.832** | **0.836** |
-| **$E_4$ (XGBoost)** | Tuned XGBoost | **1.382** | **1.944** | **0.9513** | — | — |
-| **$E_4$ (CatBoost)** | Tuned CatBoost | 1.621 | 3.225 | 0.8659 | — | — |
+| Experiment | Feature Set | Test MAE (min) | **95% Bootstrap CI (MAE)** | Test RMSE (min) | Test $R^2$ | Macro F1 | Severe Delay Recall |
+|---|---|---|---|---|---|---|---|
+| **$E_0$ (Historical)** | Historical Route Mean Baseline | 6.077 | [5.87, 6.28] | 8.550 | 0.0575 | — | — |
+| **$E_{0,\text{pers}}$ (Persistence)** | Upstream Delay Persistence Baseline | 2.329 | [2.26, 2.40] | 3.082 | 0.8776 | — | — |
+| **$E_1$** | Transit + Temporal (LightGBM) | 1.549 | [1.49, 1.61] | 2.410 | 0.9251 | 0.828 | 0.825 |
+| **$E_2$** | Transit + Temporal + Weather | 1.566 | [1.50, 1.63] | 2.551 | 0.9161 | 0.828 | 0.841 |
+| **$E_3$** | Full Multimodal (Weather + Events + Spatial) | 1.455 | [1.40, 1.51] | 2.153 | 0.9402 | 0.830 | 0.841 |
+| **$E_4$ (LightGBM)** | **Optuna-Tuned LightGBM (Production Default)** | **1.463** | **[1.41, 1.52]** | **2.220** | **0.9365** | **0.832** | **0.836** |
+| **$E_4$ (XGBoost)** | Tuned XGBoost | **1.382** | **[1.34, 1.43]** | **1.944** | **0.9513** | 0.834 | 0.834 |
+| **$E_4$ (CatBoost)** | Tuned CatBoost | 1.621 | [1.53, 1.71] | 3.225 | 0.8659 | 0.831 | 0.825 |
 
 *Exact runtime metrics recorded dynamically in `models/artifacts/model_metadata.json`.*
 

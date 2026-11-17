@@ -104,29 +104,36 @@ In Phase 2, TransitPulse-AI was subjected to an adversarial scientific and repro
    - [reports/ABLATION_RESULTS.md](reports/ABLATION_RESULTS.md) — Controlled ablation battery A–F, rolling-origin backtesting, and 95% bootstrap intervals.
    - [reports/REAL_WORLD_VALIDATION_PLAN.md](reports/REAL_WORLD_VALIDATION_PLAN.md) — Ground-truth ingestion roadmap (DTC, NYC MTA, Dublin Bus).
    - [reports/INDEPENDENT_SCIENTIFIC_AUDIT.md](reports/INDEPENDENT_SCIENTIFIC_AUDIT.md) — Master audit synthesis and scorecard.
+   - [reports/PHASE_2_1_STATISTICAL_INTEGRITY.md](reports/PHASE_2_1_STATISTICAL_INTEGRITY.md) — Phase 2.1 statistical certification and paired hypothesis testing.
 
 ---
 
 ## 5. Experimental Results (Audited Out-of-Time Test Set)
 
-Models evaluated across a strict chronological holdout test set ($N=3,570$, May 12–14, 2024):
+Models evaluated across a strict chronological holdout test set ($N=3,570$, May 12–14, 2024; $B=2,000$ paired bootstrap resamples):
 
-| Experiment | Configuration | Test MAE (min) | 95% Bootstrap CI | Test RMSE (min) | Test $R^2$ | Macro F1 | Severe Recall |
+| Experiment | Configuration | Test MAE (min) | **95% Bootstrap CI (MAE)** | Test RMSE (min) | Test $R^2$ | Macro F1 | Severe Recall |
 |---|---|---|---|---|---|---|---|
-| **$E_0$** | Historical Route Mean Baseline | 6.077 | [5.82, 6.34] | 8.550 | 0.0575 | — | — |
-| **$E_{0,\text{pers}}$** | **Upstream Persistence Baseline** | **2.329** | [2.25, 2.41] | **3.082** | **0.8776** | — | — |
-| **$E_1$** | Transit + Temporal (LightGBM) | 1.549 | [1.46, 1.58] | 2.410 | 0.9251 | 0.828 | 0.825 |
-| **$E_2$** | Transit + Temporal + Weather | 1.566 | [1.63, 1.75] | 2.551 | 0.9161 | 0.828 | 0.841 |
+| **$E_0$** | Historical Route Mean Baseline | 6.077 | [5.87, 6.28] | 8.550 | 0.0575 | — | — |
+| **$E_{0,\text{pers}}$** | **Upstream Persistence Baseline** | **2.329** | **[2.26, 2.40]** | **3.082** | **0.8776** | — | — |
+| **$E_1$** | Transit + Temporal (LightGBM) | 1.549 | [1.49, 1.61] | 2.410 | 0.9251 | 0.828 | 0.825 |
+| **$E_2$** | Transit + Temporal + Weather | 1.566 | [1.50, 1.63] | 2.551 | 0.9161 | 0.828 | 0.841 |
 | **$E_3$** | Full Multimodal (Weather + Events + Spatial) | 1.455 | [1.40, 1.51] | 2.153 | 0.9402 | 0.830 | 0.841 |
-| **$E_4$ (LGBM)** | **Optuna-Tuned LightGBM (Production Default)** | **1.463** | [1.41, 1.52] | **2.220** | **0.9365** | **0.832** | **0.836** |
-| **$E_4$ (XGBoost)** | **Tuned XGBoost** | **1.382** | [1.33, 1.44] | **1.944** | **0.9513** | — | — |
-| **$E_4$ (CatBoost)** | Tuned CatBoost | 1.621 | [1.54, 1.71] | 3.225 | 0.8659 | — | — |
+| **$E_4$ (LGBM)** | **Optuna-Tuned LightGBM (Production Default)** | **1.463** | **[1.41, 1.52]** | **2.220** | **0.9365** | **0.832** | **0.836** |
+| **$E_4$ (XGBoost)** | **Tuned XGBoost** | **1.382** | **[1.34, 1.43]** | **1.944** | **0.9513** | 0.834 | 0.834 |
+| **$E_4$ (CatBoost)** | Tuned CatBoost | 1.621 | [1.53, 1.71] | 3.225 | 0.8659 | 0.831 | 0.825 |
+
+### Multi-Criteria Model Selection (LightGBM vs XGBoost):
+While XGBoost achieves a $0.081\text{m}$ lower holdout MAE on this split ($p < 0.0001$), **LightGBM is designated as the primary production engine** based on multi-dimensional criteria:
+- **Inference Latency:** LightGBM is **$2.89\times$ faster** ($0.34\text{ ms}$ P95 vs $0.99\text{ ms}$ for XGBoost).
+- **Model Footprint:** LightGBM is **$2.83\times$ smaller** on disk ($1.39\text{ MB}$ vs $3.95\text{ MB}$).
+- **Temporal Robustness:** In rolling-origin temporal backtesting across 3 windows, LightGBM outperforms XGBoost during high-variance periods (Fold 2 MAE: $1.676\text{m}$ vs $1.689\text{m}$, RMSE: $3.38\text{m}$ vs $3.54\text{m}$), with an average rolling MAE difference of only $1.56\text{ seconds}$ across the network lifetime.
 
 ### Stratified Subgroup Performance:
 - **Rainy Periods ($N=1,602$):** MAE **1.806 min** vs **Dry Periods ($N=1,968$):** MAE **1.236 min** (adverse weather expands physical variance).
 - **Missing Telemetry Pings ($N=287$):** MAE **1.451 min** (graceful degradation via prior imputation).
-- **Rolling-Origin Temporal Stability:** Mean rolling MAE of **1.519 min** across 3 rolling windows.
-- **Inference Latency (LightGBM):** P50 = 0.30 ms, P95 = 0.37 ms, P99 = 0.56 ms.
+- **Rolling-Origin Temporal Stability:** Mean rolling MAE of **1.483 min** (LightGBM) vs **1.457 min** (XGBoost) across 3 rolling windows.
+- **Inference Latency (LightGBM):** P50 = 0.29 ms, P95 = 0.34 ms, P99 = 0.47 ms.
 
 ---
 
