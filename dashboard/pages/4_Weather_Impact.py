@@ -45,20 +45,33 @@ col_left, col_right = st.columns(2)
 with col_left:
     st.subheader("Precipitation Rate vs Transit Delay")
     sample_df = df.sample(min(2000, len(df)), random_state=42)
-    fig_scatter = px.scatter(
-        sample_df,
-        x="precip_mm",
-        y="observed_delay_min",
-        color="route_id",
-        trendline="lowess",
-        title="Non-Linear Precipitation Friction Curve (LOWESS Smoothing)",
-        labels={
+
+    has_statsmodels = False
+    try:
+        import statsmodels.api  # noqa: F401
+
+        has_statsmodels = True
+    except ImportError:
+        pass
+
+    scatter_kwargs = {
+        "x": "precip_mm",
+        "y": "observed_delay_min",
+        "color": "route_id",
+        "title": "Non-Linear Precipitation Friction Curve (LOWESS Smoothing)"
+        if has_statsmodels
+        else "Non-Linear Precipitation Friction Curve",
+        "labels": {
             "precip_mm": "Rainfall Intensity (mm/h)",
             "observed_delay_min": "Observed Delay (min)",
             "route_id": "Route",
         },
-        height=420,
-    )
+        "height": 420,
+    }
+    if has_statsmodels:
+        scatter_kwargs["trendline"] = "lowess"
+
+    fig_scatter = px.scatter(sample_df, **scatter_kwargs)
     st.plotly_chart(fig_scatter, use_container_width=True)
 
 with col_right:
