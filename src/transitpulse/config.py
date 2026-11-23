@@ -123,7 +123,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Ensure required runtime directories exist
+# Ensure required runtime directories exist (ignore read-only serverless filesystems)
 for directory in [
     settings.DATA_RAW,
     settings.DATA_INTERIM,
@@ -134,4 +134,7 @@ for directory in [
     settings.REPORTS_DIR,
     settings.LOGS_DIR,
 ]:
-    directory.mkdir(parents=True, exist_ok=True)
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
