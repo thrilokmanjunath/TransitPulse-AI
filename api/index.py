@@ -23,22 +23,21 @@ class VercelPathMiddleware:
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
             header_dict = {k.lower(): v for k, v in scope.get("headers", [])}
-            # Vercel proxy headers containing the original client URL path
+            # Print available headers to logger / stdout for debugging
+            # Check common Vercel original URL headers
             matched_path = (
-                header_dict.get(b"x-matched-path")
+                header_dict.get(b"x-now-route-matches")
                 or header_dict.get(b"x-forwarded-uri")
                 or header_dict.get(b"x-original-url")
+                or header_dict.get(b"x-invoke-path")
             )
             if matched_path:
                 orig_path = matched_path.decode("utf-8", errors="ignore").split("?")[0]
-                if orig_path and not orig_path.endswith("api/index.py") and not orig_path.endswith("api/index"):
+                if orig_path:
                     scope["path"] = orig_path
                     scope["raw_path"] = orig_path.encode("utf-8")
-                elif orig_path and (orig_path.endswith("api/index.py") or orig_path.endswith("api/index")):
-                    # Request was to root or rewritten without subpath
-                    scope["path"] = "/"
-                    scope["raw_path"] = b"/"
             elif scope.get("path") in ("/api/index.py", "/api/index", "/api"):
+                # If no specific header was found and the path is the entrypoint itself, route to root
                 scope["path"] = "/"
                 scope["raw_path"] = b"/"
 

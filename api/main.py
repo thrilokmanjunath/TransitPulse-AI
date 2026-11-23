@@ -62,7 +62,7 @@ def health_check():
 
 
 @app.get("/", tags=["System"])
-def root():
+def root(request: Request):
     """API Root with service overview and routing catalog."""
     return {
         "service": "TransitPulse-AI API",
@@ -74,6 +74,8 @@ def root():
         "city": settings.CITY_NAME,
         "environment": settings.ENVIRONMENT,
         "dataset_mode": "simulated",
+        "headers": dict(request.headers),
+        "scope_keys": list(request.scope.keys()),
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
