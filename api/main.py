@@ -61,6 +61,31 @@ def health_check():
     }
 
 
+@app.get("/", tags=["System"])
+def root():
+    """API Root with service overview and routing catalog."""
+    return {
+        "service": "TransitPulse-AI API",
+        "description": "Bengaluru Transit Delay Prediction & Spatiotemporal Analysis Platform",
+        "version": "1.0.0",
+        "status": "online",
+        "documentation": "/docs",
+        "health": "/health",
+        "city": settings.CITY_NAME,
+        "dataset_mode": settings.DATASET_MODE,
+        "endpoints": {
+            "health": "/health",
+            "docs": "/docs",
+            "routes": "/api/v1/routes",
+            "stops": "/api/v1/stops",
+            "predict": "/api/v1/predict",
+            "scenario": "/api/v1/scenario",
+            "model_info": "/api/v1/model/info",
+            "model_metrics": "/api/v1/model/metrics",
+        },
+    }
+
+
 # Include Modular Routers
 app.include_router(routes_router)
 app.include_router(predict_router)
