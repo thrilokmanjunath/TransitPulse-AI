@@ -12,3 +12,5 @@ if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
 from api.main import app  # noqa: E402
+
+__all__ = ["app"]

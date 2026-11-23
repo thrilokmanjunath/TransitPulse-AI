@@ -3,7 +3,11 @@
 from pathlib import Path
 
 import joblib
-import lightgbm as lgb
+
+try:
+    import lightgbm as lgb
+except (ImportError, OSError):
+    lgb = None
 import numpy as np
 import pandas as pd
 

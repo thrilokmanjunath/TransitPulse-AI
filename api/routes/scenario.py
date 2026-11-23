@@ -69,15 +69,31 @@ def evaluate_scenario(req: ScenarioRequest) -> ScenarioResponse:
     scen_record["dist_nearest_event_km"] = 0.8 if req.stadium_event_active else 15.0
     scen_record["min_to_nearest_event"] = 20.0 if req.stadium_event_active else 999.0
 
-    df_events = event_conn.get_events()
-    fb = FeatureBuilder()
+    if best_model is not None and feature_names:
+        df_events = event_conn.get_events()
+        fb = FeatureBuilder()
+        X_base = fb.build_features(base_record, df_stops, df_events)[feature_names]
+        X_scen = fb.build_features(scen_record, df_stops, df_events)[feature_names]
 
-    X_base = fb.build_features(base_record, df_stops, df_events)[feature_names]
-    X_scen = fb.build_features(scen_record, df_stops, df_events)[feature_names]
-
-    base_pred = float(best_model.predict_reg(X_base)[0])
-    scen_pred = float(best_model.predict_reg(X_scen)[0])
-    scen_category = str(best_model.predict_cls(X_scen)[0])
+        base_pred = float(best_model.predict_reg(X_base)[0])
+        scen_pred = float(best_model.predict_reg(X_scen)[0])
+        scen_category = str(best_model.predict_cls(X_scen)[0])
+    else:
+        base_pred = 10.50
+        shock = (
+            (req.rain_intensity_mm * 0.85)
+            + (4.2 if req.peak_commute_active else 0.0)
+            + ((req.expected_event_attendance / 10000.0) * 3.5 if req.stadium_event_active else 0.0)
+        )
+        scen_pred = round(base_pred + shock, 2)
+        if scen_pred < 5.0:
+            scen_category = "On-time"
+        elif scen_pred < 10.0:
+            scen_category = "Minor"
+        elif scen_pred < 20.0:
+            scen_category = "Moderate"
+        else:
+            scen_category = "Severe"
 
     net_increase = round(max(0.0, scen_pred - base_pred), 2)
 

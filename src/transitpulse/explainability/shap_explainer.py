@@ -4,7 +4,11 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-import shap
+
+try:
+    import shap
+except (ImportError, OSError):
+    shap = None
 
 from transitpulse.utils.logger import get_logger
 

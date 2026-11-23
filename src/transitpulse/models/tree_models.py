@@ -2,11 +2,23 @@
 
 from typing import Any
 
-import lightgbm as lgb
+try:
+    import lightgbm as lgb
+except (ImportError, OSError):
+    lgb = None
+
 import numpy as np
 import pandas as pd
-import xgboost as xgb
-from catboost import CatBoostClassifier, CatBoostRegressor
+
+try:
+    import xgboost as xgb
+except (ImportError, OSError):
+    xgb = None
+
+try:
+    from catboost import CatBoostClassifier, CatBoostRegressor
+except (ImportError, OSError):
+    CatBoostClassifier = CatBoostRegressor = None
 from sklearn.preprocessing import LabelEncoder
 
 from transitpulse.config import settings
