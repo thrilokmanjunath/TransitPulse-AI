@@ -9,6 +9,19 @@
 [![Test Suite: 22 Passed](https://img.shields.io/badge/tests-22%20passed-brightgreen.svg)](reports/TEST_REPORT.md)
 [![Audit Status: Passed (Grade A)](https://img.shields.io/badge/audit-verified%20A-success.svg)](reports/INDEPENDENT_SCIENTIFIC_AUDIT.md)
 
+[![Live Web Application](https://img.shields.io/badge/Live%20Demo-Vercel%20Production-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://transitpulse-ai-lemon.vercel.app/)
+[![Interactive Swagger Docs](https://img.shields.io/badge/Swagger%20UI-Interactive%20API%20Docs-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://transitpulse-ai-lemon.vercel.app/docs)
+[![System Health](https://img.shields.io/badge/System-Healthy%20(Sub--10ms)-emerald?style=for-the-badge)](https://transitpulse-ai-lemon.vercel.app/health)
+
+---
+
+> [!TIP]
+> **Live Production Deployment & Interactive App:**
+> The platform is deployed globally on Vercel with serverless sub-10ms inference:
+> - 🌐 **Interactive Web Application:** [https://transitpulse-ai-lemon.vercel.app/](https://transitpulse-ai-lemon.vercel.app/)
+> - 📖 **Interactive OpenAPI (Swagger UI):** [https://transitpulse-ai-lemon.vercel.app/docs](https://transitpulse-ai-lemon.vercel.app/docs)
+> - 🩺 **Liveness & Readiness Health Probe:** [https://transitpulse-ai-lemon.vercel.app/health](https://transitpulse-ai-lemon.vercel.app/health)
+
 ---
 
 > [!IMPORTANT]

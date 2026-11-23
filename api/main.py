@@ -5,7 +5,9 @@ from datetime import datetime
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
+from api.routes.frontend import HTML_CONTENT, router as frontend_router
 from api.routes.monitoring import router as monitoring_router
 from api.routes.predict import router as predict_router
 from api.routes.routes_stops import router as routes_router
@@ -62,19 +64,24 @@ def health_check():
 
 
 @app.get("/", tags=["System"])
-def root():
-    """API Root with service overview and routing catalog."""
+def root(request: Request):
+    """API Root with service overview and routing catalog (serves interactive UI for browsers)."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return HTMLResponse(content=HTML_CONTENT)
     return {
         "service": "TransitPulse-AI API",
         "description": "Bengaluru Transit Delay Prediction & Spatiotemporal Analysis Platform",
         "version": "1.0.0",
         "status": "online",
+        "web_app": "/app",
         "documentation": "/docs",
         "health": "/health",
         "city": settings.CITY_NAME,
         "environment": settings.ENVIRONMENT,
         "dataset_mode": "simulated",
         "endpoints": {
+            "web_app": "/app",
             "health": "/health",
             "docs": "/docs",
             "routes": "/api/v1/routes",
@@ -88,6 +95,7 @@ def root():
 
 
 # Include Modular Routers
+app.include_router(frontend_router)
 app.include_router(routes_router)
 app.include_router(predict_router)
 app.include_router(scenario_router)
