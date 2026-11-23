@@ -72,7 +72,8 @@ def root():
         "documentation": "/docs",
         "health": "/health",
         "city": settings.CITY_NAME,
-        "dataset_mode": settings.DATASET_MODE,
+        "environment": settings.ENVIRONMENT,
+        "dataset_mode": "simulated",
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
