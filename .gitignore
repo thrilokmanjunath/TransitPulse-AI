@@ -82,6 +82,7 @@ data/raw/*
 !data/raw/*.json
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/feature_metadata.json
 data/interim/*
 !data/interim/.gitkeep
 data/simulated/*
@@ -91,6 +92,8 @@ models/artifacts/*
 !models/artifacts/model_metadata.json
 !models/artifacts/experiment_results.json
 !models/artifacts/sample_test_records.parquet
+!models/artifacts/best_model.joblib
+!models/artifacts/multi_horizon/**
 
 # Streamlit
 .streamlit/secrets.toml
