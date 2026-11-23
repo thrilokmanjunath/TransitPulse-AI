@@ -1,0 +1,40 @@
+{
+  "ingestion_timestamp": "2026-11-17T20:36:05.303816",
+  "bengaluru_centroid": [
+    12.9716,
+    77.5946
+  ],
+  "timezone": "Asia/Kolkata",
+  "artifacts": {
+    "bmtc_routes": {
+      "path": "/Users/thrilokm/TransitPlus_AI/data/raw/bmtc_routes.parquet",
+      "records": 5,
+      "mode": "observed",
+      "sha256": "3c9f05c148ca1a5b5aed321f53c64112e70df430e7465213c999a5d02d925c7a"
+    },
+    "bmtc_stops": {
+      "path": "/Users/thrilokm/TransitPlus_AI/data/raw/bmtc_stops.parquet",
+      "records": 50,
+      "mode": "observed",
+      "sha256": "739e24cb89896748ccd752e50b003de4393a39117c1067bb94776932aa23bc44"
+    },
+    "weather": {
+      "path": "/Users/thrilokm/TransitPlus_AI/data/raw/bengaluru_weather.parquet",
+      "records": 336,
+      "mode": "observed",
+      "sha256": "91cc2026279e45e08f2800d197037db36c8023dfbaca52ff9ea8fb93a08999f8"
+    },
+    "events": {
+      "path": "/Users/thrilokm/TransitPlus_AI/data/raw/bengaluru_events.parquet",
+      "records": 7,
+      "mode": "observed",
+      "sha256": "e63f7e3d66570d7dfe985ed50b93e8ffde9b3c5ca11b42f9a5aed4c0cc1c2231"
+    },
+    "simulated_trips": {
+      "path": "/Users/thrilokm/TransitPlus_AI/data/simulated/bmtc_simulated_trips.parquet",
+      "records": 23800,
+      "mode": "simulated",
+      "sha256": "90c23614c8762e5a7dbd7891f9cc3f6483dc370edf229cdeaed6f5a40d2380b4"
+    }
+  }
+}

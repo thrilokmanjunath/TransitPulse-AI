@@ -75,9 +75,11 @@ mlartifacts/
 *.db
 *.sqlite3
 
-# Large Data & Artifacts (keep sample data and gitkeep)
+# Large Data & Artifacts (keep sample data, reference topology and gitkeep)
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/*.parquet
+!data/raw/*.json
 data/processed/*
 !data/processed/.gitkeep
 data/interim/*

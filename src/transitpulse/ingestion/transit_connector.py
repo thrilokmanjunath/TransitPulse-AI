@@ -124,7 +124,10 @@ class TransitConnector:
 
     def __init__(self, raw_dir: Path | None = None):
         self.raw_dir = raw_dir or settings.DATA_RAW
-        self.raw_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.raw_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
         self.routes_file = self.raw_dir / "bmtc_routes.parquet"
         self.stops_file = self.raw_dir / "bmtc_stops.parquet"
 
@@ -170,9 +173,12 @@ class TransitConnector:
         df_routes = pd.DataFrame(routes_records)
         df_stops = pd.DataFrame(stops_records)
 
-        df_routes.to_parquet(self.routes_file, index=False)
-        df_stops.to_parquet(self.stops_file, index=False)
-        logger.info("Saved %d BMTC routes and %d stops to Parquet.", len(df_routes), len(df_stops))
+        try:
+            df_routes.to_parquet(self.routes_file, index=False)
+            df_stops.to_parquet(self.stops_file, index=False)
+            logger.info("Saved %d BMTC routes and %d stops to Parquet.", len(df_routes), len(df_stops))
+        except OSError:
+            logger.info("Read-only filesystem detected; skipping parquet file write.")
         return df_routes, df_stops
 
     def get_routes(self) -> pd.DataFrame:
