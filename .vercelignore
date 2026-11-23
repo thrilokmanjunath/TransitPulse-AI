@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+.pytest_cache
+screenshots
+reports
+tests
+docker
+*.md
+LICENSE
+data/processed/train.parquet
+data/processed/val.parquet
+data/processed/test.parquet
+models/artifacts/xgboost_model.joblib

@@ -1,5 +1,12 @@
 {
   "version": 2,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 15,
+      "memory": 1024,
+      "includeFiles": "models/artifacts/**,data/raw/**,data/processed/feature_metadata.json"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
